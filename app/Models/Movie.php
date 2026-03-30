@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Movie extends Model
+{
+    protected $table = 'movies';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'genre',
+        'duration',
+        'release_date',
+        'director',
+        'description',
+        'poster',
+        'actors',
+        'age_limit',
+        'trailer_link',
+    ];
+}

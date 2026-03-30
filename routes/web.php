@@ -29,3 +29,5 @@ Route::get('/booking/{id}', function () {
 Route::get('/feedback', function () {
     return view('feedback');
 })->name('feedback');
+
+Route::get('/send-email', [App\Http\Controllers\SendEmailController::class, 'send'])->name('send-email');

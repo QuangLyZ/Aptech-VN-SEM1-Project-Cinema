@@ -18,24 +18,28 @@
                 </a>
             </p>
         </div>
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form class="mt-8 space-y-6" action="{{ route('register.post') }}" method="POST">
             @csrf
             <div class="space-y-4">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-300">Họ và Tên</label>
-                    <input id="name" name="name" type="text" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm flex items-center" placeholder="Nguyễn Văn A">
+                    <input id="name" name="name" type="text" value="{{ old('name') }}" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm flex items-center" placeholder="Nguyễn Văn A">
+                    @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
-                    <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="example@email.com">
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="example@email.com">
+                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="phone" class="block text-sm font-medium text-gray-300">Số Điện Thoại</label>
-                    <input id="phone" name="phone" type="tel" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="090 123 4567">
+                    <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="090 123 4567">
+                    @error('phone') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-300">Mật khẩu</label>
                     <input id="password" name="password" type="password" autocomplete="new-password" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="••••••••">
+                    @error('password') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Xác nhận mật khẩu</label>

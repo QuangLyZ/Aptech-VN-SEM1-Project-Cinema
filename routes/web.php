@@ -1,18 +1,21 @@
 <?php
 
+use App\Http\Controllers\SendEmailController;
 use Illuminate\Support\Facades\Route;
-
+Route::get('/sendEmail', [SendEmailController::class, 'send'])->name('sendEmail');
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/login', [\App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login.post');
+Route::post('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
+
+Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register'])->name('register.post');
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
@@ -30,4 +33,13 @@ Route::get('/feedback', function () {
     return view('feedback');
 })->name('feedback');
 
-Route::get('/send-email', [App\Http\Controllers\SendEmailController::class, 'send'])->name('send-email');
+Route::post('/feedback', function (\Illuminate\Http\Request $request) {
+    return back()->with('success', 'Cảm ơn sếp đã gửi phản hồi nha!');
+});
+
+use App\Http\Controllers\OtpController;
+
+// OTP Routes
+Route::get('/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
+Route::get('/otp/verify', [OtpController::class, 'showVerifyForm'])->name('otp.form');
+Route::post('/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');

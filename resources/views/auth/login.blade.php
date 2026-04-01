@@ -23,12 +23,19 @@
                 </a>
             </p>
         </div>
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form class="mt-8 space-y-6" action="{{ route('login.post') }}" method="POST">
             @csrf
+            
+            @if($errors->any())
+                <div class="bg-red-500/10 border border-red-500 text-red-500 text-sm p-3 rounded-lg text-center">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             <div class="space-y-4">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-300">Email hoặc Số điện thoại</label>
-                    <input id="email" name="email" type="text" autocomplete="email" required class="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors" placeholder="Nhập email hoặc SĐT đăng nhập">
+                    <input id="email" name="email" value="{{ old('email') }}" type="text" autocomplete="email" required class="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors" placeholder="Nhập email hoặc SĐT đăng nhập">
                 </div>
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-300">Mật khẩu</label>
@@ -38,8 +45,8 @@
 
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600 rounded bg-gray-700 outline-none">
-                    <label for="remember-me" class="ml-2 block text-sm text-gray-300">
+                    <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600 rounded bg-gray-700 outline-none">
+                    <label for="remember" class="ml-2 block text-sm text-gray-300">
                         Ghi nhớ đăng nhập
                     </label>
                 </div>

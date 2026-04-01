@@ -49,9 +49,12 @@
                         <div class="relative flex items-center gap-3">
                             <span class="text-sm font-medium">{{ Auth::user()->name ?? 'User' }}</span>
                             <!-- For simplicity in UI mock, logout form is omitted -->
-                            <a href="/logout" class="text-gray-400 hover:text-red-500 transition-colors" title="Đăng Xuất">
-                                <i class="fa-solid fa-sign-out-alt"></i>
-                            </a>
+                            <form action="{{ route('logout') }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Đăng Xuất">
+                                    <i class="fa-solid fa-sign-out-alt"></i>
+                                </button>
+                            </form>
                         </div>
                     @endguest
                 </div>

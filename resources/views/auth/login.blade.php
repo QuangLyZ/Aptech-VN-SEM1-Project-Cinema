@@ -2,12 +2,12 @@
 
 @section('content')
 <!-- Background Iron Man xịn xò -->
-<div class="min-h-[calc(100vh-4rem)] flex items-center justify-end py-12 px-4 sm:px-6 lg:px-32 relative bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('ironman.jpg') }}');">
-    <!-- Overlay tối gradient mờ dần từ phải sang trái để làm nổi bật form -->
-    <div class="absolute inset-0 bg-gradient-to-l from-gray-900/90 via-gray-900/50 to-transparent z-0"></div>
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('ironman.jpg') }}');">
+    <!-- Overlay tối để làm nổi bật form và dịu mắt -->
+    <div class="absolute inset-0 bg-black/50 z-0"></div>
 
     <!-- Container Form Glassmorphism (Blur Mica) -->
-    <div class="w-full max-w-md space-y-8 p-10 rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/10 relative z-10 block backdrop-blur-xl bg-gray-900/40">
+    <div class="w-full max-w-md space-y-8 p-10 rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/10 relative z-10 block backdrop-blur-xl bg-gray-900/50">
         <div>
             <h2 class="text-center text-4xl font-extrabold text-white tracking-widest font-sans mb-2" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
                 CINE<span class="text-red-500">BOOK</span>

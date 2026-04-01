@@ -139,6 +139,7 @@ class AuthController extends Controller
             Mail::to($request->email)->send(new SendOtpMail($otpCode, $request->name));
         } catch (\Exception $e) {
             \Log::error('Lỗi gửi mail OTP: ' . $e->getMessage());
+            return back()->with('error', 'Sếp ơi, hệ thống gửi Mail đang gặp trục trặc: ' . $e->getMessage());
         }
 
         // 6. Chuyển hướng sang trang nhập OTP, kèm theo cái email để biết đang xác thực cho ai

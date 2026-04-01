@@ -1,88 +1,86 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative">
-    <!-- Background Elements -->
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-red-600/10 blur-[100px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/10 blur-[100px]"></div>
-    </div>
+<!-- Background Iron Man xịn xò -->
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-end py-12 px-4 sm:px-6 lg:px-32 relative bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('ironman.jpg') }}');">
+    <!-- Overlay tối gradient mờ dần từ phải sang trái để làm nổi bật form -->
+    <div class="absolute inset-0 bg-gradient-to-l from-gray-900/90 via-gray-900/50 to-transparent z-0"></div>
 
-    <div class="max-w-md w-full space-y-8 bg-gray-800 p-10 rounded-2xl shadow-2xl border border-gray-700 relative z-10 block">
+    <!-- Container Form Glassmorphism (Blur Mica) -->
+    <div class="w-full max-w-md space-y-8 p-10 rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/10 relative z-10 block backdrop-blur-xl bg-gray-900/40">
         <div>
-            <div class="flex justify-center mb-4">
-                <i class="fa-solid fa-user-circle text-5xl text-red-500"></i>
-            </div>
-            <h2 class="text-center text-3xl font-extrabold text-white">
-                Đăng Nhập
+            <h2 class="text-center text-4xl font-extrabold text-white tracking-widest font-sans mb-2" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                CINE<span class="text-red-500">BOOK</span>
             </h2>
-            <p class="mt-2 text-center text-sm text-gray-400">
-                Hoặc
-                <a href="/register" class="font-medium text-red-500 hover:text-red-400 transition-colors">
-                    tạo tài khoản mới
+            <p class="text-center text-xl text-gray-200 tracking-wide mb-6">
+                Welcome Back
+            </p>
+            
+            <p class="text-center text-sm text-gray-300">
+                Are You New Member? 
+                <a href="/register" class="font-bold text-white hover:text-red-400 transition-colors drop-shadow-md">
+                    Sign UP
                 </a>
             </p>
         </div>
+        
         <form class="mt-8 space-y-6" action="{{ route('login.post') }}" method="POST">
             @csrf
             
             @if($errors->any())
-                <div class="bg-red-500/10 border border-red-500 text-red-500 text-sm p-3 rounded-lg text-center">
+                <div class="bg-red-500/20 backdrop-blur-sm border border-red-500/50 text-red-100 text-sm p-3 rounded-xl text-center shadow-lg">
                     {{ $errors->first() }}
                 </div>
             @endif
 
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300">Email hoặc Số điện thoại</label>
-                    <input id="email" name="email" value="{{ old('email') }}" type="text" autocomplete="email" required class="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors" placeholder="Nhập email hoặc SĐT đăng nhập">
+                    <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Email address / Phone</label>
+                    <input id="email" name="email" value="{{ old('email') }}" type="text" autocomplete="email" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="example@gmail.com">
                 </div>
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300">Mật khẩu</label>
-                    <input id="password" name="password" type="password" autocomplete="current-password" required class="mt-1 appearance-none relative block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm transition-colors" placeholder="••••••••">
+                    <label for="password" class="block text-sm font-medium text-gray-200 mb-1">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="••••••••••••">
                 </div>
             </div>
 
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-600 rounded bg-gray-700 outline-none">
-                    <label for="remember" class="ml-2 block text-sm text-gray-300">
-                        Ghi nhớ đăng nhập
+                    <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-cyan-500 focus:ring-cyan-400 border-white/30 rounded bg-transparent outline-none cursor-pointer">
+                    <label for="remember" class="ml-2 block text-sm text-gray-300 cursor-pointer">
+                        Remember me
                     </label>
                 </div>
 
                 <div class="text-sm">
-                    <a href="/forgot-password" class="font-medium text-red-500 hover:text-red-400 transition-colors">
-                        Quên mật khẩu?
+                    <a href="/forgot-password" class="font-medium text-gray-300 hover:text-white transition-colors">
+                        Forget Password ?
                     </a>
                 </div>
             </div>
 
-            <div>
-                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 transition-all font-bold">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <i class="fa-solid fa-lock text-red-500 group-hover:text-red-400 transition-colors"></i>
-                    </span>
-                    ĐĂNG NHẬP
+            <div class="pt-2">
+                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-cyan-400/50 text-lg font-bold rounded-xl text-white bg-cyan-600/60 hover:bg-cyan-500/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 focus:ring-offset-transparent transition-all shadow-[0_0_15px_rgba(8,145,178,0.5)] hover:shadow-[0_0_25px_rgba(8,145,178,0.8)] backdrop-blur-sm tracking-wider">
+                    Login
                 </button>
             </div>
             
-            <div class="mt-6">
+            <div class="mt-8">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-600"></div>
+                        <div class="w-full border-t border-white/20"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-gray-800 text-gray-400">Hoặc tiếp tục với</span>
+                        <span class="px-3 bg-transparent text-gray-300 backdrop-blur-sm rounded-full">Or continue with</span>
                     </div>
                 </div>
 
-                <div class="mt-6 grid grid-cols-2 gap-3">
-                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600 transition-colors">
+                <div class="mt-6 grid grid-cols-2 gap-4">
+                    <a href="#" class="w-full inline-flex justify-center py-2.5 px-4 border border-white/20 rounded-xl shadow-sm bg-white/5 text-sm font-medium text-white hover:bg-white/10 transition-colors backdrop-blur-sm">
                         <i class="fa-brands fa-google text-red-400 text-lg"></i>
                     </a>
-                    <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600 transition-colors">
-                        <i class="fa-brands fa-facebook text-blue-500 text-lg"></i>
+                    <a href="#" class="w-full inline-flex justify-center py-2.5 px-4 border border-white/20 rounded-xl shadow-sm bg-white/5 text-sm font-medium text-white hover:bg-white/10 transition-colors backdrop-blur-sm">
+                        <i class="fa-brands fa-facebook text-blue-400 text-lg"></i>
                     </a>
                 </div>
             </div>

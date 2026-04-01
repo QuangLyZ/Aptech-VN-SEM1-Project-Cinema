@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative">
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-red-600/10 blur-[100px]"></div>
-    </div>
+<div class="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('register_bg.jpg') }}');">
+    <!-- Overlay tối để làm nổi bật form và dịu mắt -->
+    <div class="absolute inset-0 bg-black/60 z-0"></div>
 
-    <div class="max-w-md w-full space-y-8 bg-gray-800 p-10 rounded-2xl shadow-2xl border border-gray-700 relative z-10 text-white">
+    <!-- Container Form Glassmorphism (Blur Mica) -->
+    <div class="w-full max-w-md space-y-8 p-10 rounded-[2rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] border border-white/10 relative z-10 block backdrop-blur-xl bg-gray-900/40">
         <div>
-            <h2 class="text-center text-3xl font-extrabold text-white">
+            <h2 class="text-center text-3xl font-extrabold text-white tracking-widest font-sans mb-2" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
                 Đăng Ký Tài Khoản
             </h2>
-            <p class="mt-2 text-center text-sm text-gray-400">
+            <p class="text-center text-sm text-gray-300">
                 Đã có tài khoản?
-                <a href="/login" class="font-medium text-red-500 hover:text-red-400 transition-colors">
+                <a href="/login" class="font-bold text-red-500 hover:text-red-400 transition-colors drop-shadow-md">
                     Đăng nhập ngay
                 </a>
             </p>
@@ -22,39 +22,39 @@
             @csrf
             <div class="space-y-4">
                 <div>
-                    <label for="name" class="block text-sm font-medium text-gray-300">Họ và Tên</label>
-                    <input id="name" name="name" type="text" value="{{ old('name') }}" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm flex items-center" placeholder="Nguyễn Văn A">
-                    @error('name') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <label for="name" class="block text-sm font-medium text-gray-200 mb-1">Họ và Tên</label>
+                    <input id="name" name="name" type="text" value="{{ old('name') }}" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="Nguyễn Văn A">
+                    @error('name') <span class="text-xs text-red-400 mt-1 block drop-shadow-md">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
-                    <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="example@email.com">
-                    @error('email') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <label for="email" class="block text-sm font-medium text-gray-200 mb-1">Email</label>
+                    <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="example@email.com">
+                    @error('email') <span class="text-xs text-red-400 mt-1 block drop-shadow-md">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="phone" class="block text-sm font-medium text-gray-300">Số Điện Thoại</label>
-                    <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="090 123 4567">
-                    @error('phone') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <label for="phone" class="block text-sm font-medium text-gray-200 mb-1">Số Điện Thoại</label>
+                    <input id="phone" name="phone" type="tel" value="{{ old('phone') }}" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="090 123 4567">
+                    @error('phone') <span class="text-xs text-red-400 mt-1 block drop-shadow-md">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="password" class="block text-sm font-medium text-gray-300">Mật khẩu</label>
-                    <input id="password" name="password" type="password" autocomplete="new-password" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="••••••••">
-                    @error('password') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                    <label for="password" class="block text-sm font-medium text-gray-200 mb-1">Mật khẩu</label>
+                    <input id="password" name="password" type="password" autocomplete="new-password" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="••••••••">
+                    @error('password') <span class="text-xs text-red-400 mt-1 block drop-shadow-md">{{ $message }}</span> @enderror
                 </div>
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Xác nhận mật khẩu</label>
-                    <input id="password_confirmation" name="password_confirmation" type="password" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="••••••••">
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-200 mb-1">Xác nhận mật khẩu</label>
+                    <input id="password_confirmation" name="password_confirmation" type="password" required class="appearance-none relative block w-full px-4 py-3 border border-white/30 bg-transparent text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 sm:text-sm transition-all placeholder-gray-400 shadow-inner" placeholder="••••••••">
                 </div>
             </div>
 
-            <div>
-                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-gray-900 transition-colors">
+            <div class="pt-2">
+                <button type="submit" class="group relative w-full flex justify-center py-3.5 px-4 border border-red-500/50 text-lg font-bold rounded-xl text-white bg-red-600/80 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:ring-offset-transparent transition-all shadow-[0_0_15px_rgba(220,38,38,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.8)] backdrop-blur-sm tracking-wider">
                     ĐĂNG KÝ
                 </button>
             </div>
             
-            <p class="text-xs text-center text-gray-400 mt-4">
-                Bằng việc đăng ký, bạn đã đồng ý với <a href="#" class="text-red-500 hover:underline">Điều khoản</a> và <a href="#" class="text-red-500 hover:underline">Chính sách bảo mật</a> của chúng tôi.
+            <p class="text-xs text-center text-gray-300 mt-4">
+                Bằng việc đăng ký, bạn đã đồng ý với <a href="#" class="text-red-400 hover:text-white transition-colors">Điều khoản</a> và <a href="#" class="text-red-400 hover:text-white transition-colors">Chính sách bảo mật</a> của chúng tôi.
             </p>
         </form>
     </div>

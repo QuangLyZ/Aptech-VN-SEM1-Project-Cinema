@@ -45,6 +45,9 @@ Route::get('/booking/{id}', [MovieController::class, 'show'])->name('booking.sho
 Route::get('/feedback', function () {
     return view('feedback');
 })->name('feedback');
+Route::get('/theaters', function () {
+    return view('theaters');
+})->name('theaters');
 
 Route::post('/feedback', function (\Illuminate\Http\Request $request) {
     return back()->with('success', 'Cảm ơn sếp đã gửi phản hồi nha!');

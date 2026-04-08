@@ -72,18 +72,18 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            @foreach ($comingSoon as $movie)
+            @for ($i = 5; $i <= 8; $i++)
             <div class="group relative rounded-xl overflow-hidden bg-gray-800">
-                <img src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400&h=600&auto=format&fit=crop' }}" class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="{{ $movie->name }}">
+                <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400&h=600&auto=format&fit=crop" class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Movie Poster">
                 <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-yellow-500 px-3 py-1 rounded-full text-sm font-bold border border-yellow-500/50">
-                    {{ \Carbon\Carbon::parse($movie->release_date)->format('d.m.Y') }}
+                    25.12.{{ date('Y') }}
                 </div>
                 <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-900 to-transparent">
-                    <h3 class="text-lg font-bold text-white mb-1">{{ $movie->name }}</h3>
-                    <p class="text-gray-400 text-sm">{{ $movie->genre }}</p>
+                    <h3 class="text-lg font-bold text-white mb-1">Phim Tình Cảm Mẫu {{ $i }}</h3>
+                    <p class="text-gray-400 text-sm">Lãng Mạn, Hài Hước</p>
                 </div>
             </div>
-            @endforeach
+            @endfor
         </div>
     </div>
 </div>

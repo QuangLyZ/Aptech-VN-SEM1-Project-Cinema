@@ -38,4 +38,10 @@ class Showtime extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function cinema()
+    {
+        // Đi qua Room để lấy Cinema
+        return $this->room->cinema ?? null;
+    }
 }

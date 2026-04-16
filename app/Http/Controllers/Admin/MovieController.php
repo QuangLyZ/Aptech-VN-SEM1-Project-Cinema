@@ -89,4 +89,53 @@ class MovieController extends Controller
         $movie->delete();
         return redirect()->route('admin.movies.index')->with('success', 'Xóa phim thành công!');
     }
+
+    public function list()
+    {
+        $today = today();
+
+        $movies = \App\Models\Movie::whereHas('showtimes', function ($q) use ($today) {
+                $q->whereBetween('start_time', [
+                    $today->copy()->startOfDay(),
+                    $today->copy()->addDays(4)->endOfDay(),
+                ]);
+            })
+            ->with(['showtimes' => function ($q) use ($today) {
+                $q->whereBetween('start_time', [
+                        $today->copy()->startOfDay(),
+                        $today->copy()->addDays(4)->endOfDay(),
+                    ])
+                    ->orderBy('start_time')
+                    ->with('room.cinema');
+            }])
+            ->get();
+
+        $movies->each(function ($movie) {
+            $movie->cinema_ids = $movie->showtimes
+                ->map(fn($s) => optional($s->room)->cinema_id)
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            $movie->dates_map = $movie->showtimes
+                ->groupBy(fn($s) => \Carbon\Carbon::parse($s->start_time)->toDateString())
+                ->map(fn($group) => $group->map(fn($s) => [
+                    'id'   => $s->id,
+                    'time' => \Carbon\Carbon::parse($s->start_time)->format('H:i'),
+                ])->values())
+                ->toArray();
+        });
+
+        $cinemas = \App\Models\Cinema::orderBy('name')->get();
+
+        $dates = collect(range(0, 4))->map(fn($i) => [
+            'value' => $today->copy()->addDays($i)->toDateString(),
+            'label' => $i === 0 ? 'Hôm nay' : $today->copy()->addDays($i)->format('D'),
+            'day'   => $today->copy()->addDays($i)->format('d'),
+            'month' => $today->copy()->addDays($i)->format('M'),
+        ]);
+
+        return view('movies.index', compact('movies', 'cinemas', 'dates'));
+    }
 }

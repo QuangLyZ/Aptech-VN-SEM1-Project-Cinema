@@ -9,6 +9,7 @@ use App\Http\Controllers\OtpController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CinemaController;
 use App\Models\Setting;
+use App\Models\Cinema;
 use App\Models\Feedback;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -42,11 +43,13 @@ Route::get('/forgot-password', function () {
 })->name('forgot-password');
 
 // Movies
-Route::get('/movies', [MovieController::class, 'list'])->name('movies.index');
+Route::get('/movies', [App\Http\Controllers\Admin\MovieController::class, 'list'])->name('movies.index');
 
 // Cinemas
 Route::get('/cinemas', function () {
-    return view('theaters');
+    $cinemas = Cinema::all();
+
+    return view('theaters', compact('cinemas'));
 })->name('cinemas.index');
 Route::get('/cinemas/{id}', [CinemaController::class, 'show'])->name('cinemas.show');
 

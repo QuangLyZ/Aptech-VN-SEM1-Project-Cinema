@@ -27,8 +27,7 @@ class Movie extends Model
         'trailer_link',
     ];
 
-    public function showtimes(): HasMany
-    {
+   public function showtimes() {
         return $this->hasMany(Showtime::class);
     }
 }

@@ -82,12 +82,28 @@ class MovieController extends Controller
         return view('booking.show', compact('movie'));
     }
 
+    public function suggestions(Request $request)
+    {
+        $q = mb_strtolower(trim($request->query('q', '')), 'UTF-8');
+        
+        if (!$q) {
+            return response()->json([]);
+        }
+
+        $movies = Movie::where(DB::raw('LOWER(name)'), 'like', "%{$q}%")
+            ->orderBy('name')
+            ->limit(5)
+            ->get(['id', 'name']);
+
+        return response()->json($movies);
+    }
+
     public function list(Request $request): View
     {
         $cinemas = collect();
         $movies = collect();
         $availableDates = collect();
-        $selectedDate = Carbon::today()->toDateString();
+    $selectedDate = Carbon::today()->toDateString();
         $selectedCinemaId = $request->integer('cinema') ?: null;
         $selectedCinema = null;
         $dbWarning = null;
@@ -126,7 +142,8 @@ class MovieController extends Controller
                 ->join('cinemas as cinemas', 'cinemas.id', '=', 'rooms.cinema_id')
                 ->leftJoin('subtitles as subtitles', 'subtitles.id', '=', 'showtimes.subtitle_id')
                 ->leftJoin('ratings as ratings', 'ratings.movie_id', '=', 'movies.id')
-                ->whereDate('showtimes.start_time', $selectedDate)
+                // If selectedDate is the special value 'all' then do not filter by date
+                ->when($selectedDate !== 'all', fn ($query) => $query->whereDate('showtimes.start_time', $selectedDate))
                 ->when($selectedCinemaId, fn ($query) => $query->where('cinemas.id', $selectedCinemaId))
                 ->groupBy([
                     'movies.id',
@@ -192,6 +209,37 @@ class MovieController extends Controller
                     ];
                 })
                 ->values();
+
+            if ($request->filled('q')) {
+                $q = mb_strtolower(trim($request->query('q')), 'UTF-8');
+                $searchedMovies = DB::table('movies')
+                    ->leftJoin('ratings', 'ratings.movie_id', '=', 'movies.id')
+                    ->where(DB::raw('LOWER(movies.name)'), 'like', "%{$q}%")
+                    ->orWhere(DB::raw('LOWER(movies.genre)'), 'like', "%{$q}%")
+                    ->groupBy('movies.id')
+                    ->select('movies.*', DB::raw('AVG(ratings.rate) as average_rating'))
+                    ->get();
+                
+                $searchMoviesFormatted = $searchedMovies->map(function ($m) {
+                    return (object) [
+                        'id' => $m->id,
+                        'name' => $m->name,
+                        'poster' => $m->poster,
+                        'description' => $m->description,
+                        'genre' => $m->genre,
+                        'duration' => $m->duration,
+                        'release_date' => $m->release_date,
+                        'age_limit' => $m->age_limit,
+                        'rating' => $m->average_rating ? round((float) $m->average_rating, 1) : null,
+                        'showtimes' => collect(),
+                    ];
+                });
+
+                // Gộp phim vừa tìm được vào danh sách (bỏ qua nếu đã có)
+                $existingIds = $movies->pluck('id');
+                $searchMoviesFormatted = $searchMoviesFormatted->reject(fn($m) => $existingIds->contains($m->id));
+                $movies = $movies->concat($searchMoviesFormatted)->values();
+            }
         } catch (QueryException $exception) {
             Log::warning('Movies page schedule query failed.', [
                 'message' => $exception->getMessage(),
@@ -267,6 +315,11 @@ class MovieController extends Controller
 
     private function resolveSelectedDate(?string $requestedDate, Collection $availableDates): string
     {
+        // Support special value 'all' which means do not filter by date
+        if ($requestedDate === 'all') {
+            return 'all';
+        }
+
         if ($requestedDate) {
             try {
                 $parsedDate = Carbon::parse($requestedDate)->toDateString();

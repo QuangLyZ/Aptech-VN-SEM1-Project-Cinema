@@ -174,7 +174,7 @@
 
                         <h3 class="text-2xl font-bold text-white mb-2">{{ $movie->name }}</h3>
                         <p class="text-sm text-gray-400 mb-3 line-clamp-2">{{ $movie->description ?? 'Không có mô tả' }}</p>
-
+                        
                         {{-- Thông tin --}}
                         <p class="text-sm text-gray-500 mb-4 flex items-center gap-3">
                             <span><i class="fa-regular fa-clock mr-1"></i>{{ $movie->duration ?? 120 }} phút</span>
@@ -184,28 +184,41 @@
                             <span class="text-gray-700">|</span>
                             <span><i class="fa-regular fa-calendar mr-1"></i>{{ \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') }}</span>
                             @endif
+                            
                         </p>
+                        <div class="mt-4">                    
+                            <a href="{{ route('movies.show', $movie->id) }}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="inline-flex items-center bg-transparent hover:bg-gray-800 text-white font-bold py-2 px-6 rounded-lg transition-colors border border-gray-600 w-fit text-sm">
+                                <i class="fa-solid fa-play mr-2"></i> XEM TRAILER
+                            </a>
+                        </div>
 
                         {{-- Suất chiếu --}}
                         <div class="mt-auto">
                             <p class="text-sm font-semibold text-gray-300 mb-3">Chọn suất chiếu:</p>
                             <div class="flex flex-wrap gap-2">
                                 @if(isset($movie->showtimes) && count($movie->showtimes) > 0)
-                                    @foreach($movie->showtimes as $showtime)
                                     @php
-                                        $isPast = \Carbon\Carbon::parse($showtime->start_time)->isPast();
+                                        $futureShowtimes = collect($movie->showtimes)->filter(function($showtime) {
+                                            return !\Carbon\Carbon::parse($showtime->start_time)->isPast();
+                                        });
                                     @endphp
-                                    <a
-                                        href="{{ $isPast ? 'javascript:void(0)' : route('booking.show', $showtime->id) }}"
-                                        class="px-4 py-2 rounded-md transition-colors text-sm font-medium border 
-                                            {{ $isPast 
-                                                ? 'bg-gray-800/50 border-gray-700 text-gray-500 cursor-not-allowed opacity-40 grayscale' 
-                                                : 'bg-gray-900 border-gray-600 text-gray-200 hover:border-red-500 hover:text-red-400' }}"
-                                        title="{{ $isPast ? 'Suất chiếu đã kết thúc' : trim(($showtime->cinema_name ?? '') . ' - ' . ($showtime->room_name ?? '')) }}"
-                                    >
-                                        {{ \Carbon\Carbon::parse($showtime->start_time)->format('H:i') }}
-                                    </a>
-                                    @endforeach
+                                    @if($futureShowtimes->count() > 0)
+                                        @foreach($futureShowtimes as $showtime)
+                                            <a
+                                                href="{{ route('booking.show', $showtime->id) }}"
+                                                class="px-4 py-2 rounded-md transition-colors text-sm font-medium border bg-gray-900 border-gray-600 text-gray-200 hover:border-red-500 hover:text-red-400"
+                                                title="{{ trim(($showtime->cinema_name ?? '') . ' - ' . ($showtime->room_name ?? '')) }}"
+                                            >
+                                                {{ \Carbon\Carbon::parse($showtime->start_time)->format('H:i') }}
+                                            </a>
+                                        @endforeach
+                                    @else
+                                        {{-- Nếu có suất chiếu trong DB nhưng đều là giờ cũ --}}
+                                        <p class="text-gray-500 text-xs italic">Các suất chiếu hôm nay đã kết thúc.</p>
+                                    @endif
                                 @else
                                     <p class="text-gray-500 text-xs italic">Không có suất chiếu nào cho ngày này.</p>
                                 @endif

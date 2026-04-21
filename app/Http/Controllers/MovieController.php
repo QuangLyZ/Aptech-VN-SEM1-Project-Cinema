@@ -173,6 +173,7 @@ class MovieController extends Controller
                     'movies.duration',
                     'movies.release_date',
                     'movies.age_limit',
+                    'movies.trailer_link',
                     'showtimes.id',
                     'showtimes.start_time',
                     'cinemas.id',
@@ -190,6 +191,7 @@ class MovieController extends Controller
                     'movies.duration',
                     'movies.release_date',
                     'movies.age_limit',
+                    'movies.trailer_link',
                     'showtimes.id as showtime_id',
                     'showtimes.start_time',
                     'cinemas.id as cinema_id',
@@ -208,6 +210,7 @@ class MovieController extends Controller
                     return (object) [
                         'id' => $first->movie_id,
                         'name' => $first->movie_name,
+                        'trailer_link' => $first->trailer_link,
                         'poster' => $first->poster,
                         'description' => $first->description,
                         'genre' => $first->genre,

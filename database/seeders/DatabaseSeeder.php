@@ -176,10 +176,13 @@ class DatabaseSeeder extends Seeder
         ];
  
         $cinemas = [];
-        foreach ($cinemasData as $cItem) {
-            $cinemas[$cItem['name']] = Cinema::updateOrCreate(
-                ['name' => $cItem['name']],
-                $cItem
+        foreach ($cinemasData as $data) {
+            // store features as array (Eloquent will JSON encode via cast)
+            $cinemas[$data['name']] = Cinema::updateOrCreate(
+                ['name' => $data['name']],
+                array_merge($data, [
+                    'features' => $data['features'],
+                ])
             );
         }
  
@@ -204,43 +207,51 @@ class DatabaseSeeder extends Seeder
         // Lịch chiếu theo phim ngày → rạp → giờ
         $schedule = [
             'Avengers: Secret Wars' => [
-                '2026-04-23' => [
+                '2026-04-22' => [
                     'CineBook Landmark 81'  => ['09:00', '12:00', ],
-                    'CineBook Aeon Tân Phú' => ['11:00', '14:30', '18:00',],
+                    'CineBook Aeon Tân Phú' => ['11:00', '14:30', '18:00', '21:30'],
                     'CineBook Sư Vạn Hạnh' => ['10:00', '13:30', '17:00', '20:30'],
                 ],
-                '2026-04-22' => [
+                '2026-04-23' => [
                     'CineBook Aeon Tân Phú' => ['11:00', '14:30'],
-                    'CineBook Quận 7' => ['10:00', '13:30', '17:00'],
+                    'CineBook Quận 7' => ['10:00', '13:30', '17:00', '20:30'],
                 ],
             ],
 
             'The Dark Knight' => [
-                '2026-04-24' => [
+                '2026-04-23' => [
                     'CineBook Landmark 81'  => ['08:30', '11:30', '14:30'],
-                    'CineBook Thủ Đức'  => ['08:30', '11:30'],
+                    'CineBook Thủ Đức'  => ['08:30', '11:30', '14:30', '18:00'],
                 ],
-                '2026-04-22' => [
-                    'CineBook Giga Mall'    => ['09:30', '13:00'],
+                '2026-04-24' => [
+                    'CineBook Giga Mall'    => ['09:30', '13:00', '16:30', '20:00'],
                     'CineBook Quận 7'    => ['09:30', '13:00', '16:30'],
                     
                 ],
             ],
             'Spider-Man: No Way Home' => [
-                '2026-04-24' => [
-                    'CineBook Aeon Tân Phú'  => ['08:30', '11:30', '14:30'],
-                    'CineBook Quận 7'  => ['08:30', '11:30', '14:30', '18:00'],
-                ],
                 '2026-04-22' => [
+                    'CineBook Aeon Tân Phú'  => ['08:30', '11:30', '14:30'],
+                    'CineBook Quận 7'  => ['08:30', '11:30', '14:30'],
+                ],
+                '2026-04-23' => [
                     'CineBook Giga Mall'    => ['09:30', '13:00', '16:30'],
-                    'CineBook Landmark 81'    => ['09:30', '13:00', '16:30', '20:00'],
+                    'CineBook Landmark 81'    => ['09:30', '13:00'],
                     
                 ],
             ],
             'Dune: Part Two' => [
                 '2026-04-22' => [
                     'CineBook Thủ Đức'  => ['10:30', '14:00', '17:30', '21:00'],
-                    'CineBook Giga Mall'    => ['09:00', '12:30'],
+                    'CineBook Giga Mall'    => ['09:00', '12:30', '16:00'],
+                ],
+                '2026-04-23' => [
+                    'CineBook Landmark 81'  => ['10:30', '14:00', '17:30'],
+                    'CineBook Aeon Tân Phú'    => ['09:00', '12:30'],
+                ],
+                '2026-04-24' => [
+                    'CineBook Sư Vạn Hạnh'  => ['10:30', '14:00'],
+                    'CineBook Quận 7'    => ['09:00', '12:30', '16:00'],
                 ],
             ],
         ];
@@ -250,23 +261,23 @@ class DatabaseSeeder extends Seeder
             if (!$movie) continue;
 
             foreach ($dateSchedule as $date => $cinemaSchedule) {
+
                 foreach ($cinemaSchedule as $cinemaName => $times) {
+                    $cinema = $cinemas[$cinemaName] ?? null;
+                    if (!$cinema) continue;
+
                     $room = $rooms[$cinemaName][0] ?? null;
                     if (!$room) continue;
 
                     foreach ($times as $time) {
-                        $startTime = Carbon::parse($date . ' ' . $time);
-                        // Chỉ tạo nếu chưa có suất chiếu cùng phim, cùng phòng vào giờ đó
-                        Showtime::updateOrCreate(
-                            [
-                                'movie_id'   => $movie->id,
-                                'room_id'    => $room->id,
-                                'start_time' => $startTime,
-                            ],
-                            [
-                                'subtitle_id' => $subtitle->id,
-                            ]
-                        );
+                        $startTime = Carbon::parse($date)->setTimeFromTimeString($time);
+
+                        Showtime::create([
+                            'movie_id'    => $movie->id,
+                            'room_id'     => $room->id,
+                            'subtitle_id' => $subtitle->id,
+                            'start_time'  => $startTime,
+                        ]);
                     }
                 }
             }

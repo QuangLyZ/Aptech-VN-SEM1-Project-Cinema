@@ -1,5 +1,4 @@
 ﻿<?php
-
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\AccountController;
@@ -17,6 +16,10 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ReviewController;
 
+Route::patch('/admin/movies/{movie}/toggle-status', [MovieController::class, 'toggleStatus'])
+    ->name('admin.movies.toggleStatus');
+Route::get('/movies/coming/{movie}', [MovieController::class, 'comingShow'])
+    ->name('movies.coming.show');
 Route::patch('/admin/posts/{id}/toggle', [PostController::class, 'toggle'])
     ->name('admin.posts.toggle');
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');

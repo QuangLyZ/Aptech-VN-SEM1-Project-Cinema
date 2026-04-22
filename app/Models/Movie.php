@@ -25,6 +25,7 @@ class Movie extends Model
         'actors',
         'age_limit',
         'trailer_link',
+        'status',
     ];
 
     public function showtimes(): HasMany

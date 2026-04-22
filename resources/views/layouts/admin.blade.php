@@ -34,27 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
-<style>
-.flatpickr-calendar {
-    background: #020617;
-    border: 1px solid #374151;
-    color: white;
-}
-
-.flatpickr-day {
-    color: white;
-}
-
-.flatpickr-day.selected {
-    background: #ef4444;
-    border-color: #ef4444;
-}
-
-.flatpickr-time input {
-    color: white;
-    background: #020617;
-}
-</style>
 </head>
 
 <body class="min-h-screen bg-gray-950 text-gray-100">

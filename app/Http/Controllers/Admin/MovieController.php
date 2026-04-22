@@ -21,10 +21,10 @@ class MovieController extends Controller
 
     public function create()
     {
-        return view('admin.movies.create', [
-            'activeTab' => 'management',
-            'pageTitle' => 'Thêm Phim Mới'
-        ]);
+    return view('admin.movies.create', [
+        'activeTab' => 'management',
+        'pageTitle' => 'Thêm Phim Mới',
+    ]);
     }
 
     public function store(Request $request)
@@ -39,9 +39,10 @@ class MovieController extends Controller
             'poster' => 'nullable|image|max:2048',
             'actors' => 'nullable|string',
             'age_limit' => 'nullable|integer',
-            'trailer_link' => 'nullable|url'
+            'trailer_link' => 'nullable|url',
+            'status' => 'nullable|in:now_showing,coming_soon'
         ]);
-
+        $validated['status'] = null;
         if ($request->hasFile('poster')) {
             $path = $request->file('poster')->store('posters', 'public');
             $validated['poster'] = '/storage/' . $path;
@@ -61,7 +62,14 @@ class MovieController extends Controller
     }
 
     public function update(Request $request, Movie $movie)
-    {
+    {   
+        if ($request->has('status') && !$request->has('name')) {
+    $movie->update([
+        'status' => $request->status
+    ]);
+
+    return redirect()->back()->with('success', 'Đổi trạng thái thành công!');
+}
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'genre' => 'nullable|string|max:255',
@@ -72,7 +80,8 @@ class MovieController extends Controller
             'poster' => 'nullable|image|max:2048',
             'actors' => 'nullable|string',
             'age_limit' => 'nullable|integer',
-            'trailer_link' => 'nullable|url'
+            'trailer_link' => 'nullable|url',
+            'status' => 'nullable|in:now_showing,coming_soon'
         ]);
 
         if ($request->hasFile('poster')) {
@@ -83,6 +92,30 @@ class MovieController extends Controller
         $movie->update($validated);
         return redirect()->route('admin.movies.index')->with('success', 'Cập nhật phim thành công!');
     }
+
+public function toggleStatus(Movie $movie)
+{
+    $movie->status = $movie->status == 'now_showing'
+        ? 'coming_soon'
+        : 'now_showing';
+
+    $movie->save();
+
+    return redirect()->back();
+}
+
+    public function detail($id)
+{
+    $movie = Movie::findOrFail($id);
+
+    // 👉 nếu là phim sắp chiếu
+    if ($movie->status == 'coming_soon') {
+        return view('movies.coming', compact('movie'));
+    }
+
+    // 👉 còn lại là phim đang chiếu
+    return view('movies.show', compact('movie'));
+}
 
     public function destroy(Movie $movie)
     {

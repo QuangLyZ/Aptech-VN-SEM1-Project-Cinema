@@ -31,21 +31,18 @@ class MovieController extends Controller
                 ->get();
 
             $nowShowing = Movie::query()
-                ->with('reviews')
-                ->where(function ($query) use ($today) {
-                    $query->whereNull('release_date')->orWhereDate('release_date', '<=', $today);
-                })
-                ->orderByDesc('release_date')
-                ->orderBy('name')
-                ->limit(8)
-                ->get();
+    ->with('reviews')
+    ->where('status', 'now_showing')
+    ->orderByDesc('release_date')
+    ->limit(8)
+    ->get();
 
             $comingSoon = Movie::query()
-                ->with('reviews')
-                ->whereDate('release_date', '>', $today)
-                ->orderBy('release_date')
-                ->limit(8)
-                ->get();
+    ->with('reviews')
+    ->where('status', 'coming_soon')
+    ->orderBy('release_date')
+    ->limit(8)
+    ->get();
 
             $moviesWithSchedules = $this->attachFirstShowtimes(
                 $nowShowing->concat($comingSoon)->concat($movies)->unique('id')->values()
@@ -99,7 +96,11 @@ class MovieController extends Controller
             });
         });
 
-        return view('movies.show', compact('movie', 'averageRating', 'groupedShowtimes'));
+            if ($movie->status == 'coming_soon') {
+            return view('movies.coming', compact('movie'));
+        }
+
+            return view('movies.show', compact('movie', 'averageRating', 'groupedShowtimes'));
     }
 
     public function suggestions(Request $request)
@@ -336,4 +337,22 @@ class MovieController extends Controller
 
         return $availableDates->first()->toDateString();
     }
+    public function toggleStatus(Movie $movie)
+{
+    $movie->status = $movie->status == 'now_showing'
+        ? 'coming_soon'
+        : 'now_showing';
+
+    $movie->save();
+
+    return redirect()->back();
+}
+public function comingShow(Movie $movie)
+{
+    if ($movie->status !== 'coming_soon') {
+        abort(404);
+    }
+
+    return view('movies.coming', compact('movie'));
+}
 }

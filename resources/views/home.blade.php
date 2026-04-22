@@ -63,8 +63,8 @@
     </div>
 
     <!-- Movie Carousel -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        @foreach ($nowShowing as $movie)
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 ">
+        @foreach ($nowShowing->take(4) as $movie)
         <div class="group relative rounded-xl overflow-hidden bg-gray-800 transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl hover:shadow-red-500/20">
             <img src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=400&h=600&auto=format&fit=crop' }}" class="w-full h-80 object-cover" alt="{{ $movie->name }}">
             <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/40 to-transparent opacity-90"></div>
@@ -106,21 +106,57 @@
             <a href="/movies" class="text-yellow-500 hover:text-yellow-400 font-medium">Xem tất cả</a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-           @foreach ($comingPosts as $post)
+            @forelse ($comingSoon->take(4) as $movie)
+<div class="group relative rounded-xl overflow-hidden bg-gray-800">
+    
+    <img src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400&h=600&auto=format&fit=crop' }}"
+         class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+         alt="{{ $movie->name }}">
+
+    <!-- Ngày chiếu -->
+    @if($movie->release_date)
+    <div class="absolute top-3 right-3 bg-black/70 text-yellow-500 px-3 py-1 rounded-full text-sm font-bold border border-yellow-500/50">
+        {{ \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') }}
+    </div>
+    @endif
+
+    <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-900 to-transparent">
+        
+        <a href="{{ route('movies.show', $movie->id) }}">
+            <h3 class="text-lg font-bold text-white mb-1">
+                {{ $movie->name }}
+            </h3>
+        </a>
+
+        <p class="text-gray-400 text-sm">
+            {{ $movie->genre }}
+        </p>
+
+        <a href="{{ route('movies.show', $movie->id) }}"
+           class="mt-3 inline-block w-full text-center bg-yellow-500 hover:bg-yellow-600 text-black py-2 rounded font-medium text-sm">
+            XEM CHI TIẾT
+        </a>
+
+    </div>
+</div>
+@empty
+            @for ($i = 5; $i <= 8; $i++)
             <div class="group relative rounded-xl overflow-hidden bg-gray-800">
-               <img alt="{{ $post->title }}" class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity" src="{{ $post->thumbnail ?? 'https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400&h=600&auto=format&fit=crop' }}">
-                
+                <img src="https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=400&h=600&auto=format&fit=crop" class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Movie Poster">
+                <div class="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-yellow-500 px-3 py-1 rounded-full text-sm font-bold border border-yellow-500/50">
+                    25.12.{{ date('Y') }}
+                </div>
                 <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-900 to-transparent">
-                    <a href="{{ route('posts.show', $post->id) }}">    
-                        <h3 class="text-lg font-bold text-white mb-1">{{ $post->title }}</h3>
-                    </a>
-                        <p class="text-gray-400 text-sm">{{ $post->keywords }}</p>
+                    <h3 class="text-lg font-bold text-white mb-1">Phim Tình Cảm Mẫu {{ $i }}</h3>
+                    <p class="text-gray-400 text-sm">Lãng Mạn, Hài Hước</p>
                 </div>
             </div>
-            @endforeach
+            @endfor
+            @endforelse
         </div>
     </div>
 </div>
+
 
 <!-- Tin Tức & Khuyến Mãi -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

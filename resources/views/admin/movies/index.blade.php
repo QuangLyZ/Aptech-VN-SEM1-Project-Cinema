@@ -48,6 +48,7 @@
                         <th class="px-6 py-4 font-semibold tracking-wider text-center">Thể loại</th>
                         <th class="px-6 py-4 font-semibold tracking-wider text-center">Thời lượng</th>
                         <th class="px-6 py-4 font-semibold tracking-wider text-center">Ngày Chiếu</th>
+                        <th class="px-6 py-4 font-semibold tracking-wider text-center">Trạng thái</th>
                         <th class="px-6 py-4 font-semibold tracking-wider text-right">Thao tác</th>
                     </tr>
                 </thead>
@@ -82,6 +83,24 @@
                             <td class="px-6 py-4 text-center text-gray-300">
                                 {{ $movie->release_date ? \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') : 'N/A' }}
                             </td>
+<td class="px-6 py-4 text-center">
+<form action="{{ route('admin.movies.toggleStatus', $movie) }}" method="POST">
+    @csrf
+    @method('PATCH')
+
+    <button type="submit">
+        @if($movie->status == 'now_showing')
+            <span class="rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-400">
+                🎬 Đang chiếu
+            </span>
+        @else
+            <span class="rounded-full bg-yellow-500/10 px-3 py-1 text-xs font-semibold text-yellow-400">
+                ⏳ Sắp chiếu
+            </span>
+        @endif
+    </button>
+</form>
+</td>
                             <td class="px-6 py-4 text-right border-l border-gray-800/50">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('admin.movies.edit', $movie) }}" class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 transition hover:bg-sky-500/20" title="Chỉnh sửa">
@@ -99,7 +118,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                 <div class="flex flex-col items-center">
                                     <i class="fa-solid fa-film text-4xl mb-3 text-gray-700"></i>
                                     <p>Chưa có phim nào trong hệ thống.</p>

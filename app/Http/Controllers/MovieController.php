@@ -24,25 +24,33 @@ class MovieController extends Controller
         $dbWarning = null;
 
         try {
-            $today = Carbon::today()->toDateString();
+            // GRACE: Lay thoi gian thuc theo mui gio Viet Nam (GMT+7)
+            $now = Carbon::now('Asia/Ho_Chi_Minh');
+            $today = $now->toDateString();
+            
+            // Moc thoi gian 3 thang de phan loai phim
+            $threeMonthsLater = $now->copy()->addMonths(3)->toDateString();
 
             $movies = Movie::query()
                 ->orderByDesc('created_at')
                 ->get();
 
+            // Phim Dang Chieu: Nhung phim da ra mat HOAC se ra mat trong vong 3 thang toi
             $nowShowing = Movie::query()
                 ->with('reviews')
-                ->where(function ($query) use ($today) {
-                    $query->whereNull('release_date')->orWhereDate('release_date', '<=', $today);
+                ->where(function ($query) use ($threeMonthsLater) {
+                    $query->whereNull('release_date')
+                          ->orWhereDate('release_date', '<=', $threeMonthsLater);
                 })
                 ->orderByDesc('release_date')
                 ->orderBy('name')
                 ->limit(8)
                 ->get();
 
+            // Phim Sap Chieu: Nhung phim co ngay ra mat cach hien tai tren 3 thang
             $comingSoon = Movie::query()
                 ->with('reviews')
-                ->whereDate('release_date', '>', $today)
+                ->whereDate('release_date', '>', $threeMonthsLater)
                 ->orderBy('release_date')
                 ->limit(8)
                 ->get();

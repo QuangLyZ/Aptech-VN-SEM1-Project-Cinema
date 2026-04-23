@@ -14,8 +14,19 @@
                 Nhập email của bạn để nhận liên kết đặt lại mật khẩu.
             </p>
         </div>
-        <form class="mt-8 space-y-6" action="#" method="POST">
+        <form class="mt-8 space-y-6" action="{{ route('password.email') }}" method="POST">
             @csrf
+            @if (session('status'))
+                <div class="bg-green-500/10 border border-green-500 text-green-500 px-4 py-3 rounded-lg text-sm mb-4">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if ($errors->has('email'))
+                <div class="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg text-sm mb-4">
+                    {{ $errors->first('email') }}
+                </div>
+            @endif
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-300">Email đã đăng ký</label>
                 <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 block w-full px-3 py-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="example@email.com">

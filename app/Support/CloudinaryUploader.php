@@ -48,7 +48,8 @@ class CloudinaryUploader
 
         $endpoint = "https://api.cloudinary.com/v1_1/{$cloudName}/image/upload";
 
-        $response = Http::asMultipart()
+        $response = Http::withoutVerifying()
+            ->asMultipart()
             ->attach('file', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
             ->post($endpoint, $params);
 
@@ -68,5 +69,38 @@ class CloudinaryUploader
         }
 
         return $url;
+    }
+
+    public function deleteImage(string $publicId): bool
+    {
+        $cloudName = (string) config('services.cloudinary.cloud_name');
+        $apiKey = (string) config('services.cloudinary.api_key');
+        $apiSecret = (string) config('services.cloudinary.api_secret');
+
+        if (!$cloudName || !$apiKey || !$apiSecret) {
+            return false;
+        }
+
+        $timestamp = time();
+        $params = [
+            'public_id' => $publicId,
+            'timestamp' => $timestamp,
+        ];
+
+        ksort($params);
+        $signature = sha1(collect($params)
+            ->map(fn ($value, $key) => $key.'='.$value)
+            ->implode('&').$apiSecret);
+
+        $endpoint = "https://api.cloudinary.com/v1_1/{$cloudName}/image/destroy";
+
+        $response = Http::withoutVerifying()->post($endpoint, [
+            'public_id' => $publicId,
+            'api_key' => $apiKey,
+            'timestamp' => $timestamp,
+            'signature' => $signature,
+        ]);
+
+        return $response->successful();
     }
 }

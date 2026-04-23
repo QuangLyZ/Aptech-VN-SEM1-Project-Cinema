@@ -99,32 +99,42 @@
 </div>
 
 <!-- Phim Sắp Chiếu -->
-<div class="bg-gray-800/50 py-16">
+<div class="bg-gray-900 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-end mb-8">
             <h2 class="text-3xl font-bold text-white border-l-4 border-yellow-500 pl-3">Phim Sắp Chiếu</h2>
-            <a href="/movies" class="text-yellow-500 hover:text-yellow-400 font-medium">Xem tất cả</a>
+            <a href="/movies" class="text-yellow-500 hover:text-yellow-400 font-medium text-sm">Xem tất cả</a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
            @forelse ($comingSoon as $movie)
-            <div class="group relative rounded-xl overflow-hidden bg-gray-800">
-               <img alt="{{ $movie->name }}" class="w-full h-80 object-cover opacity-80 group-hover:opacity-100 transition-opacity" src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop' }}">
+            <div class="group relative rounded-xl overflow-hidden bg-gray-800 transition-transform duration-300 hover:-translate-y-2">
+               <img alt="{{ $movie->name }}" class="w-full h-96 object-cover opacity-80 group-hover:opacity-100 transition-opacity" src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop' }}">
                 
-                <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-900 to-transparent">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                
+                <div class="absolute bottom-0 w-full p-6">
                     <a href="{{ route('movies.show', $movie->id) }}">    
-                        <h3 class="text-lg font-bold text-white mb-1">{{ $movie->name }}</h3>
+                        <h3 class="text-xl font-bold text-white mb-1 group-hover:text-yellow-500 transition-colors">{{ $movie->name }}</h3>
                     </a>
-                        <p class="text-gray-400 text-sm">
-                            {{ $movie->release_date ? \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') : ($movie->genre ?: 'Sắp ra mắt') }}
-                        </p>
+                    <p class="text-gray-400 text-sm flex items-center">
+                        <i class="fa-regular fa-calendar-days mr-2 text-yellow-500"></i>
+                        Khởi chiếu: {{ $movie->release_date ? \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') : 'Đang cập nhật' }}
+                    </p>
+                </div>
+                
+                <!-- Age Label -->
+                <div class="absolute top-4 left-4">
+                    <span class="bg-yellow-500 text-black text-xs font-black px-2 py-1 rounded shadow-lg">
+                        {{ $movie->age_limit ? 'T' . $movie->age_limit : 'P' }}
+                    </span>
                 </div>
             </div>
             @empty
             @for ($i = 1; $i <= 4; $i++)
             <div class="group relative rounded-xl overflow-hidden bg-gray-800">
-               <img alt="Coming soon" class="w-full h-80 object-cover opacity-80" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop">
-                <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-900 to-transparent">
-                    <h3 class="text-lg font-bold text-white mb-1">Phim Sắp Ra Mắt</h3>
+               <img alt="Coming soon" class="w-full h-96 object-cover opacity-50" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop">
+                <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-gray-900 to-transparent">
+                    <h3 class="text-xl font-bold text-white mb-1">Phim Sắp Ra Mắt</h3>
                     <p class="text-gray-400 text-sm">Đang cập nhật lịch chiếu</p>
                 </div>
             </div>

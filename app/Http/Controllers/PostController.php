@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Carbon\Carbon;
+use App\Support\CloudinaryUploader;
 
 class PostController extends Controller
-{   
+{
+    protected $cloudinary;
+
+    public function __construct(CloudinaryUploader $cloudinary)
+    {
+        $this->cloudinary = $cloudinary;
+    }
 public function uploadImage(Request $request)
 {
     if ($request->hasFile('upload')) {
@@ -111,9 +118,19 @@ public function destroy($id)
 
     if ($post->thumbnail) {
         try {
-            $publicId = pathinfo($post->thumbnail, PATHINFO_FILENAME);
-            Cloudinary::destroy($publicId);
-        } catch (\Exception $e) {}
+            // Trich xuat Public ID tu URL Cloudinary
+            // Vi du: https://res.cloudinary.com/.../image/upload/v1234/cinebook/posts/abc.jpg
+            // Public ID se la: cinebook/posts/abc
+            $parts = explode('/', parse_url($post->thumbnail, PHP_URL_PATH));
+            $uploadIndex = array_search('upload', $parts);
+            if ($uploadIndex !== false) {
+                $publicIdWithExt = implode('/', array_slice($parts, $uploadIndex + 2)); // Bo qua 'upload' va 'version'
+                $publicId = pathinfo($publicIdWithExt, PATHINFO_FILENAME);
+                $this->cloudinary->deleteImage($publicId);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Loi xoa anh Cloudinary: ' . $e->getMessage());
+        }
     }
 
     $post->delete();

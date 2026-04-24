@@ -47,7 +47,7 @@
     @endif
 
     <section class="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <form id="postCreateForm" action="{{ route('admin.posts.store') }}" method="POST" class="rounded-[2rem] border border-gray-800 bg-gray-900/80 p-6 shadow-xl shadow-black/10">
+        <form id="postCreateForm" action="{{ route('admin.posts.store') }}" method="POST">
             @csrf
 
             <div class="flex items-center justify-between gap-4 border-b border-gray-800 pb-5">

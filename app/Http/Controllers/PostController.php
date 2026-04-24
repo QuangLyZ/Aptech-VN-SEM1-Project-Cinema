@@ -44,19 +44,14 @@ public function uploadImage(Request $request)
         ]
     ]);
 }
-    public function list()
-    {
-    $posts = Post::orderBy('publish_at', 'desc')->get();
+public function list()
+{
     $posts = Post::where('status', 'visible')
-            ->orderBy('publish_at', 'desc')
-            ->get();
-    return view('post.index', compact('posts'));
-    }
-    public function detail($slug)
-    {
-    $post = Post::where('slug', $slug)->firstOrFail();
-    return view('post.detail', compact('post'));
-    }
+        ->orderBy('publish_at', 'desc')
+        ->paginate(9);
+
+return view('admin.posts.index', compact('posts'));
+}
     public function index()
     {
         $posts = Post::latest()->get();

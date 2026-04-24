@@ -46,7 +46,7 @@
     @endif
 
     <section class="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <form id="postCreateForm" action="{{ route('admin.posts.update', $post->id) }}" method="POST">
+        <form id="postCreateForm" action="{{ route('admin.posts.update', $post->id) }}" method="POST" >
     @csrf
     @method('PUT')
 

@@ -146,7 +146,10 @@
 
 <!-- Tin Tức & Khuyến Mãi -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <h2 class="text-3xl font-bold text-white mb-8 border-l-4 border-blue-500 pl-3">Tin Tức & Khuyến Mãi</h2>
+    <div class="flex justify-between items-end mb-8">
+        <h2 class="text-3xl font-bold text-white mb-8 border-l-4 border-blue-500 pl-3">Tin Tức & Khuyến Mãi</h2>
+        <a href="{{ route('posts.index') }}" class="text-blue-500 hover:text-blue-400 font-medium text-sm">Xem Tin tức</a>
+    </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         @forelse ($newsPosts as $post)
         <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-colors">

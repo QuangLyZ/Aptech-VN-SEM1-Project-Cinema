@@ -17,6 +17,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ReviewController;
 
+Route::get('/tin-tuc', [PostController::class, 'list'])->name('posts.index');
+Route::get('/tin-tuc/{id}', [PostController::class, 'show'])->name('posts.show');
 Route::patch('/admin/posts/{id}/toggle', [PostController::class, 'toggle'])
     ->name('admin.posts.toggle');
 Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');

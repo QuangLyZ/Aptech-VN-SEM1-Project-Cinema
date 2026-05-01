@@ -241,6 +241,7 @@
             isAuthenticated: @json(auth()->check()),
             vouchers: @json($availableVoucherPayload),
             successPopupStorageKey: 'cinebook_payment_success_popup',
+            userExistingTicketsCount: @json($userExistingTicketsCount ?? 0),
         };
 
         const vouchersByCode = bookingConfig.vouchers.reduce((map, voucher) => {
@@ -556,7 +557,31 @@
 
                 const seatId = seat.dataset.seat;
                 const seatIndex = selectedSeats.indexOf(seatId);
+                const maxAvailableSeats = 5 - bookingConfig.userExistingTicketsCount;
+                
                 if (seatIndex === -1) {
+                    // Check if already selected maximum seats for this movie+cinema
+                    if (selectedSeats.length >= maxAvailableSeats) {
+                        const totalExisting = bookingConfig.userExistingTicketsCount;
+                        if (totalExisting > 0) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Vượt quá giới hạn',
+                                html: `Tài khoản của bạn đã mua <strong>${totalExisting}</strong> vé cho bộ phim này tại rạp này.<br/><br/>Bạn chỉ được đặt tối đa 5 vé cho 1 bộ phim trong 1 cụm rạp. Còn lại <strong>${maxAvailableSeats}</strong> vé.<br/><br/>Nếu muốn đặt thêm vui lòng liên hệ admin.`,
+                                confirmButtonColor: '#dc2626',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Vượt quá giới hạn',
+                                html: 'Bạn chỉ được đặt tối đa 5 vé cho 1 bộ phim trong 1 cụm rạp.<br/><br/>Nếu muốn đặt thêm vui lòng liên hệ admin.',
+                                confirmButtonColor: '#dc2626',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                        return;
+                    }
                     selectedSeats.push(seatId);
                     seat.dataset.state = 'selected';
                     seat.classList.add('bg-red-600', 'text-white', 'border-red-500');

@@ -27,6 +27,7 @@ class BookingController extends Controller
         $seats = collect();
         $takenSeatNames = [];
         $availableVouchers = collect();
+        $userExistingTicketsCount = 0;
 
         try {
             $showtime = DB::table('showtimes')
@@ -38,10 +39,12 @@ class BookingController extends Controller
                     'showtimes.id',
                     'showtimes.start_time',
                     'showtimes.room_id',
+                    'showtimes.movie_id',
                     'movies.name as movie_name',
                     'movies.poster',
                     'movies.age_limit',
                     'rooms.name as room_name',
+                    'cinemas.id as cinema_id',
                     'cinemas.name as cinema_name',
                 ])
                 ->first();
@@ -71,6 +74,17 @@ class BookingController extends Controller
 
             if ($request->user()) {
                 $availableVouchers = $this->loadAvailableVouchers();
+                
+                // Check how many SEATS (not tickets) user already has for this movie in this cinema
+                $userExistingTicketsCount = DB::table('ticket_details')
+                    ->join('tickets', 'tickets.id', '=', 'ticket_details.ticket_id')
+                    ->join('showtimes', 'showtimes.id', '=', 'tickets.showtime_id')
+                    ->join('rooms', 'rooms.id', '=', 'showtimes.room_id')
+                    ->where('tickets.user_id', $request->user()->id)
+                    ->where('showtimes.movie_id', $showtime->movie_id)
+                    ->where('rooms.cinema_id', $showtime->cinema_id)
+                    ->where('tickets.status', 'paid')
+                    ->count();
             }
         } catch (QueryException) {
             // Keep the booking UI renderable even if local schema is incomplete.
@@ -101,6 +115,7 @@ class BookingController extends Controller
             'seatPrice' => self::SEAT_PRICE,
             'availableVouchers' => $availableVouchers,
             'availableVoucherPayload' => $voucherPayload,
+            'userExistingTicketsCount' => $userExistingTicketsCount,
         ]);
     }
 
@@ -147,11 +162,44 @@ class BookingController extends Controller
             ]);
 
             $result = DB::transaction(function () use ($request, $showtimeId, $data) {
-                $showtime = DB::table('showtimes')->where('id', $showtimeId)->first();
+                $showtime = DB::table('showtimes')
+                    ->select('id', 'room_id', 'movie_id')
+                    ->where('id', $showtimeId)
+                    ->first();
 
                 if (!$showtime) {
                     throw ValidationException::withMessages([
                         'showtime' => 'Suất chiếu không còn tồn tại.',
+                    ]);
+                }
+
+                // Get cinema_id from room
+                $cinema = DB::table('rooms')
+                    ->where('id', $showtime->room_id)
+                    ->select('cinema_id')
+                    ->first();
+
+                if (!$cinema) {
+                    throw ValidationException::withMessages([
+                        'showtime' => 'Phòng chiếu không tồn tại.',
+                    ]);
+                }
+
+                // Check if user already has 5 seats for this movie in this cinema
+                $existingTicketsCount = DB::table('ticket_details')
+                    ->join('tickets', 'tickets.id', '=', 'ticket_details.ticket_id')
+                    ->join('showtimes', 'showtimes.id', '=', 'tickets.showtime_id')
+                    ->join('rooms', 'rooms.id', '=', 'showtimes.room_id')
+                    ->where('tickets.user_id', $request->user()->id)
+                    ->where('showtimes.movie_id', $showtime->movie_id)
+                    ->where('rooms.cinema_id', $cinema->cinema_id)
+                    ->where('tickets.status', 'paid')
+                    ->count();
+
+                $newSeatsCount = count($data['seat_names']);
+                if ($existingTicketsCount + $newSeatsCount > 5) {
+                    throw ValidationException::withMessages([
+                        'seat_names' => 'Tài khoản của bạn đã đặt ' . $existingTicketsCount . ' vé cho bộ phim này tại rạp này. Bạn chỉ được đặt tối đa 5 vé cho 1 bộ phim trong 1 cụm rạp. Nếu muốn đặt thêm vui lòng liên hệ admin.',
                     ]);
                 }
 

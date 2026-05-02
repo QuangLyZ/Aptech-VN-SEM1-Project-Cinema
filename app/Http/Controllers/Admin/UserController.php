@@ -11,33 +11,34 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::query()
+            ->addSelect([
+                'total_spent' => DB::table('tickets')
+                    ->whereColumn('user_id', 'Users.id')
+                    ->selectRaw('COALESCE(SUM(total_price), 0)'),
+                'favorite_genre' => DB::table('tickets')
+                    ->join('showtimes', 'tickets.showtime_id', '=', 'showtimes.id')
+                    ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
+                    ->whereColumn('tickets.user_id', 'Users.id')
+                    ->whereNotNull('movies.genre')
+                    ->select('movies.genre')
+                    ->groupBy('movies.genre')
+                    ->orderByRaw('COUNT(*) DESC')
+                    ->limit(1),
+                'favorite_hour' => DB::table('tickets')
+                    ->join('showtimes', 'tickets.showtime_id', '=', 'showtimes.id')
+                    ->whereColumn('tickets.user_id', 'Users.id')
+                    ->selectRaw('EXTRACT(HOUR FROM showtimes.start_time)')
+                    ->groupByRaw('EXTRACT(HOUR FROM showtimes.start_time)')
+                    ->orderByRaw('COUNT(*) DESC')
+                    ->limit(1),
+            ])
+            ->paginate(10);
 
-        foreach ($users as $user) {
-            // Thể loại ưa thích
-            $favoriteGenre = DB::table('tickets')
-                ->join('showtimes', 'tickets.showtime_id', '=', 'showtimes.id')
-                ->join('movies', 'showtimes.movie_id', '=', 'movies.id')
-                ->where('tickets.user_id', $user->id)
-                ->select('movies.genre', DB::raw('count(*) as count'))
-                ->whereNotNull('movies.genre')
-                ->groupBy('movies.genre')
-                ->orderByDesc('count')
-                ->first();
-
-            $user->favorite_genre = $favoriteGenre ? $favoriteGenre->genre : 'Chưa có dữ liệu';
-
-            // Khung giờ hay xem
-            $favoriteTime = DB::table('tickets')
-                ->join('showtimes', 'tickets.showtime_id', '=', 'showtimes.id')
-                ->where('tickets.user_id', $user->id)
-                ->select(DB::raw('EXTRACT(HOUR FROM showtimes.start_time) as hour'), DB::raw('count(*) as count'))
-                ->groupBy('hour')
-                ->orderByDesc('count')
-                ->first();
-
-            if ($favoriteTime) {
-                $h = (int) $favoriteTime->hour;
+        $users->getCollection()->transform(function ($user) {
+            // Format favorite time label
+            if ($user->favorite_hour !== null) {
+                $h = (int) $user->favorite_hour;
                 if ($h >= 5 && $h < 12) {
                     $user->favorite_time = 'Sáng (' . sprintf('%02d:00', $h) . ')';
                 } elseif ($h >= 12 && $h < 18) {
@@ -48,13 +49,11 @@ class UserController extends Controller
             } else {
                 $user->favorite_time = 'Chưa có dữ liệu';
             }
+
+            $user->favorite_genre = $user->favorite_genre ?? 'Chưa có dữ liệu';
             
-            // Tổng chi tiêu
-            $totalSpent = DB::table('tickets')
-                ->where('user_id', $user->id)
-                ->sum('total_price');
-            $user->total_spent = $totalSpent;
-        }
+            return $user;
+        });
 
         return view('admin.users.index', [
             'users' => $users,
@@ -65,11 +64,16 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        // Chỉ Quản trị viên cấp cao (System Owner) mới có quyền phân quyền
+        if (!auth()->user()->isSystemOwner()) {
+            return redirect()->route('admin.users.index')->with('error', 'Chỉ Quản trị viên cấp cao mới có quyền thực hiện hành động này!');
+        }
+
         $request->validate([
-            'admin_role' => 'required|boolean',
+            'admin_role' => 'required|integer|in:0,1,2',
         ]);
 
-        $user->admin_role = $request->boolean('admin_role');
+        $user->admin_role = $request->input('admin_role');
         $user->save();
 
         return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật quyền truy cập cho ' . ($user->name ?? $user->username ?? 'người dùng'));

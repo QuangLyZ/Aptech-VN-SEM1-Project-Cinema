@@ -39,9 +39,15 @@
                                         {{ strtoupper(substr($user->name ?? $user->username ?? 'U', 0, 1)) }}
                                     </div>
                                     <div>
-                                        <div class="font-bold text-white">{{ $user->name ?? 'Người dùng Thường' }}</div>
-                                        <div class="mt-1 text-xs text-gray-500">{{ '@' . $user->username }}</div>
+                                <div class="font-bold text-white">{{ $user->name ?? 'Người dùng Thường' }}</div>
+                                <div class="mt-1 text-xs text-gray-500">{{ '@' . $user->username }}</div>
+                                @if(auth()->user()->isSystemOwner() && $user->isSystemOwner())
+                                    <div class="mt-2 inline-flex items-center gap-1 text-[9px] font-black text-red-500 uppercase tracking-tighter bg-red-500/5 px-2 py-0.5 rounded border border-red-500/20">
+                                        <i class="fa-solid fa-crown"></i>
+                                        System Owner
                                     </div>
+                                @endif
+</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">
@@ -49,14 +55,23 @@
                                 <div class="text-xs text-gray-500 mt-0.5">{{ $user->phone ?? 'N/A' }}</div>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <select name="admin_role" onchange="this.form.submit()" class="rounded-lg bg-gray-800 text-xs font-semibold {{ $user->admin_role ? 'text-purple-400' : 'text-gray-300' }} border border-gray-700 hover:bg-gray-700 focus:ring-1 focus:ring-purple-500 outline-none p-2 cursor-pointer transition-colors shadow-sm">
-                                        <option value="1" {{ $user->admin_role ? 'selected' : '' }}>Quản trị viên</option>
-                                        <option value="0" {{ !$user->admin_role ? 'selected' : '' }}>Khách hàng</option>
-                                    </select>
-                                </form>
+                                @php
+                                    $isSystemOwner = $user->isSystemOwner();
+                                    $displayRole = $isSystemOwner ? 2 : $user->admin_role;
+                                    
+                                    $roleClass = $displayRole == 2 ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 
+                                                ($displayRole == 1 ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 
+                                                'bg-gray-500/10 text-gray-400 border-gray-500/20');
+                                    $roleIcon = $displayRole == 2 ? 'fa-user-shield' : 
+                                               ($displayRole == 1 ? 'fa-user-tie' : 'fa-user');
+                                    $roleText = $isSystemOwner ? 'Quản trị viên tối cao' : 
+                                               ($displayRole == 2 ? 'Quản trị viên' : 
+                                               ($displayRole == 1 ? 'Quản lý' : 'Khách hàng'));
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 rounded-full {{ $roleClass }} px-3 py-1 text-xs font-semibold border">
+                                    <i class="fa-solid {{ $roleIcon }} text-[10px]"></i>
+                                    {{ $roleText }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @if($user->favorite_genre !== 'Chưa có dữ liệu')

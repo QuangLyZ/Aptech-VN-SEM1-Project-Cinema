@@ -15,10 +15,17 @@
                 <p class="mt-1 text-sm text-gray-400">Quản lý toàn bộ thư viện phim chiếu rạp của hệ thống.</p>
             </div>
         </div>
-        <a href="{{ route('admin.movies.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 transition hover:bg-red-700">
-            <i class="fa-solid fa-plus"></i>
-            Thêm Phim Mới
-        </a>
+        @if(auth()->user()->isSystemOwner())
+            <a href="{{ route('admin.movies.create') }}" class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-900/30 transition hover:bg-red-700">
+                <i class="fa-solid fa-plus"></i>
+                Thêm Phim Mới
+            </a>
+        @else
+            <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-800 px-5 py-2.5 text-sm font-bold text-gray-400 border border-gray-700 cursor-not-allowed">
+                <i class="fa-solid fa-chart-line"></i>
+                Chế độ Theo dõi
+            </button>
+        @endif
     </div>
 
     @if(session('success'))
@@ -82,21 +89,27 @@
                             <td class="px-6 py-4 text-center text-gray-300">
                                 {{ $movie->release_date ? \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') : 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 text-right border-l border-gray-800/50">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.movies.edit', $movie) }}" class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 transition hover:bg-sky-500/20" title="Chỉnh sửa">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phim này không?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20" title="Xóa phim">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                    <td class="px-6 py-5 align-top text-right">
+                                        @if(auth()->user()->isSystemOwner())
+                                            <div class="flex justify-end gap-2">
+                                                <a href="{{ route('admin.movies.edit', $movie) }}" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-700 bg-gray-950 text-gray-400 transition hover:border-blue-500 hover:text-blue-500">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </a>
+                                                <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" onsubmit="return confirm('Sếp có chắc chắn muốn xóa phim này không?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-700 bg-gray-950 text-gray-400 transition hover:border-red-500 hover:text-red-500">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <span class="text-[10px] font-bold text-amber-500 uppercase tracking-widest bg-amber-500/5 px-3 py-1.5 rounded-lg border border-amber-500/20">
+                                                <i class="fa-solid fa-lock mr-1"></i> Read Only
+                                            </span>
+                                        @endif
+                                    </td>
+
                     @empty
                         <tr>
                             <td colspan="5" class="px-6 py-12 text-center text-gray-500">

@@ -16,28 +16,24 @@ class MovieController extends Controller
 {
     public function index(): View
     {
-        $movies = collect();
+        // GRACE: Tạm thời tắt Cache để kiểm tra lỗi 500
         $nowShowing = collect();
         $comingSoon = collect();
         $featuredMovie = null;
         $newsPosts = collect();
         $dbWarning = null;
+        $moviesList = collect();
 
         try {
-            // GRACE: Lay thoi gian thuc theo mui gio Viet Nam (GMT+7)
             $now = Carbon::now('Asia/Ho_Chi_Minh');
-            $today = $now->toDateString();
-            
-            // Moc thoi gian 3 thang de phan loai phim
             $threeMonthsLater = $now->copy()->addMonths(3)->toDateString();
 
-            $movies = Movie::query()
-                ->orderByDesc('created_at')
-                ->get();
+            // Tối ưu: Chỉ lấy những gì cần thiết và Eager Load Count/Sum thay vì cả Relation
+            $baseQuery = Movie::query()
+                ->withCount(['reviews' => fn($q) => $q->where('is_visible', true)])
+                ->withSum(['reviews' => fn($q) => $q->where('is_visible', true)], 'rating');
 
-            // Phim Dang Chieu: Nhung phim da ra mat HOAC se ra mat trong vong 3 thang toi
-            $nowShowing = Movie::query()
-                ->with('reviews')
+            $nowShowing = (clone $baseQuery)
                 ->where(function ($query) use ($threeMonthsLater) {
                     $query->whereNull('release_date')
                           ->orWhereDate('release_date', '<=', $threeMonthsLater);
@@ -47,27 +43,31 @@ class MovieController extends Controller
                 ->limit(8)
                 ->get();
 
-            // Phim Sap Chieu: Nhung phim co ngay ra mat cach hien tai tren 3 thang
-            $comingSoon = Movie::query()
-                ->with('reviews')
+            $comingSoon = (clone $baseQuery)
                 ->whereDate('release_date', '>', $threeMonthsLater)
                 ->orderBy('release_date')
                 ->limit(8)
                 ->get();
 
+            //featuredMovie fallback logic
+            $moviesForFeatured = (clone $baseQuery)
+                ->orderByDesc('created_at')
+                ->limit(10)
+                ->get();
+
             $moviesWithSchedules = $this->attachFirstShowtimes(
-                $nowShowing->concat($comingSoon)->concat($movies)->unique('id')->values()
+                $nowShowing->concat($comingSoon)->concat($moviesForFeatured)->unique('id')->values()
             );
 
             $movieMap = $moviesWithSchedules->keyBy('id');
             $nowShowing = $nowShowing->map(fn ($movie) => $movieMap->get($movie->id, $movie));
             $comingSoon = $comingSoon->map(fn ($movie) => $movieMap->get($movie->id, $movie));
-            $movies = $movies->map(fn ($movie) => $movieMap->get($movie->id, $movie));
+            $moviesList = $moviesForFeatured->map(fn ($movie) => $movieMap->get($movie->id, $movie));
 
             $featuredMovie = $nowShowing->firstWhere(fn ($movie) => filled($movie->booking_showtime_id))
                 ?? $nowShowing->first()
                 ?? $comingSoon->first()
-                ?? $movies->first();
+                ?? $moviesList->first();
 
             $newsPosts = Post::query()
                 ->published()
@@ -76,14 +76,18 @@ class MovieController extends Controller
                 ->limit(3)
                 ->get();
         } catch (QueryException $exception) {
-            Log::warning('Home page movie query failed.', [
-                'message' => $exception->getMessage(),
-            ]);
-
-            $dbWarning = 'Không thể tải dữ liệu phim từ database. Kiểm tra lại kết nối PostgreSQL/Supabase trong .env.';
+            Log::warning('Home page movie query failed: ' . $exception->getMessage());
+            $dbWarning = 'Không thể tải dữ liệu phim. Đang hiển thị bản lưu tạm hoặc dữ liệu mẫu.';
         }
 
-        return view('home', compact('movies', 'nowShowing', 'comingSoon', 'featuredMovie', 'newsPosts', 'dbWarning'));
+        return view('home', [
+            'movies' => $moviesList,
+            'nowShowing' => $nowShowing,
+            'comingSoon' => $comingSoon,
+            'featuredMovie' => $featuredMovie,
+            'newsPosts' => $newsPosts,
+            'dbWarning' => $dbWarning
+        ]);
     }
 
     public function show($id)
@@ -94,7 +98,7 @@ class MovieController extends Controller
                   ->with(['room.cinema', 'subtitle']);
         }])->findOrFail($id);
 
-        $averageRating = $movie->reviews()->avg('rating') ?: 0;
+        $averageRating = $movie->average_rating;
 
         // Group showtimes by date and then by cinema
         $groupedShowtimes = $movie->showtimes->groupBy(function($showtime) {
@@ -129,7 +133,7 @@ class MovieController extends Controller
         $cinemas = collect();
         $movies = collect();
         $availableDates = collect();
-    $selectedDate = Carbon::today()->toDateString();
+        $selectedDate = Carbon::today()->toDateString();
         $selectedCinemaId = $request->integer('cinema') ?: null;
         $selectedCinema = null;
         $dbWarning = null;
@@ -202,7 +206,8 @@ class MovieController extends Controller
                     'cinemas.name as cinema_name',
                     'rooms.name as room_name',
                     'subtitles.name as subtitle_name',
-                    DB::raw('AVG(reviews.rating) as average_rating'),
+                    DB::raw('SUM(reviews.rating) as total_rating_sum'),
+                    DB::raw('COUNT(reviews.id) as total_review_count'),
                 ])
                 ->get();
 
@@ -210,6 +215,11 @@ class MovieController extends Controller
                 ->groupBy('movie_id')
                 ->map(function (Collection $movieShowtimes) {
                     $first = $movieShowtimes->first();
+                    
+                    // Công thức: (Tổng điểm + 5 điểm nền) / (Số lượt đánh giá + 1)
+                    $sum = (float) $first->total_rating_sum;
+                    $count = (int) $first->total_review_count;
+                    $rating = round(($sum + 5) / ($count + 1), 1);
 
                     return (object) [
                         'id' => $first->movie_id,
@@ -220,7 +230,7 @@ class MovieController extends Controller
                         'duration' => $first->duration,
                         'release_date' => $first->release_date,
                         'age_limit' => $first->age_limit,
-                        'rating' => $first->average_rating ? round((float) $first->average_rating, 1) : null,
+                        'average_rating' => $rating,
                         'showtimes' => $movieShowtimes->map(function ($showtime) {
                             return (object) [
                                 'id' => $showtime->showtime_id,

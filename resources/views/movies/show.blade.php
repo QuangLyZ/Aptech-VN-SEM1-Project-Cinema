@@ -32,11 +32,9 @@
                              alt="{{ $movie->name }}">
                         
                         <!-- Age Limit Badge -->
-                        @if($movie->age_limit)
-                            <div class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg border border-red-500/50">
-                                {{ $movie->age_limit }}+
-                            </div>
-                        @endif
+                        <div class="absolute top-6 right-6 bg-red-600 text-white text-sm sm:text-base font-black px-4 py-2 rounded-2xl shadow-[0_0_30px_rgba(220,38,38,0.6)] border border-red-500/50 transform hover:scale-110 transition-transform">
+                            {{ $movie->age_limit ? 'T' . $movie->age_limit : 'P' }}
+                        </div>
                     </div>
                 </div>
 
@@ -64,9 +62,9 @@
 
                 <!-- Meta Info -->
                 <div class="flex flex-wrap items-center gap-4 mb-8 text-sm md:text-base">
-                    <div class="flex items-center text-yellow-500 bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/20">
-                        <i class="fa-solid fa-star mr-2"></i>
-                        <span class="font-bold">{{ number_format($averageRating, 1) }}</span>
+                    <div class="flex items-center text-yellow-400 bg-black/60 backdrop-blur-xl px-5 py-2.5 rounded-2xl border border-yellow-500/30 shadow-[0_0_20px_rgba(234,179,8,0.2)]">
+                        <i class="fa-solid fa-star mr-2.5 text-lg"></i>
+                        <span class="font-black text-xl">{{ number_format($averageRating, 1) }}</span>
                     </div>
                     <div class="flex items-center text-gray-300 bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-700/50">
                         <i class="fa-regular fa-clock mr-2 text-red-500"></i>

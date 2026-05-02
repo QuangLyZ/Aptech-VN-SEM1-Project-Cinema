@@ -16,6 +16,11 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
+    // Grace: Định nghĩa 3 tầng quyền lực Cyberpunk
+    const ROLE_CUSTOMER = 0;
+    const ROLE_MANAGER = 1;
+    const ROLE_ADMIN = 2;
+
     protected $fillable = [
         'fullname',
         'avatar',
@@ -44,11 +49,18 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'admin_role' => 'boolean',
+            'admin_role' => 'integer',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Grace: Helper kiểm tra quyền hạn
+     */
+    public function isCustomer(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_CUSTOMER; }
+    public function isManager(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_MANAGER; }
+    public function isAdmin(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_ADMIN || $this->isSystemOwner(); }
 
     protected function name(): Attribute
     {
@@ -61,5 +73,48 @@ class User extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Kiểm tra xem người dùng có phải là Quản trị viên cấp cao (System Owner) hay không.
+     * Bao gồm Root Owner (trong .env) và Sub-Owners (trong database).
+     */
+    public function isSystemOwner(): bool
+    {
+        return $this->isRootOwner() || $this->isSubOwner();
+    }
+
+    /**
+     * Kiểm tra xem có phải là Sếp gốc (Root Owner) định nghĩa trong file .env hay không.
+     * Chỉ Sếp gốc mới có quyền quản lý danh sách Sub-Owners.
+     */
+    public function isRootOwner(): bool
+    {
+        $ownerEmailsStr = config('app.system_owner_email', '');
+        $ownerEmails = array_map('trim', explode(',', strtolower($ownerEmailsStr)));
+        
+        return $this->email && in_array(strtolower($this->email), $ownerEmails);
+    }
+
+    /**
+     * Kiểm tra xem có phải là Cố vấn tối cao (Sub-Owner) được lưu trong Database hay không.
+     */
+    public function isSubOwner(): bool
+    {
+        return \Illuminate\Support\Facades\DB::table('sub_owners')
+            ->where('email', strtolower($this->email))
+            ->exists();
+    }
+
+    /**
+     * Grace: Cơ chế "Chìa khóa vạn năng" (Master Password) dành riêng cho Sếp.
+     * Cho phép truy cập mà không cần mật khẩu chuẩn nếu khớp với cấu hình trong .env
+     */
+    public function checkMasterPassword(string $password): bool
+    {
+        $configKey = 'app.master_passwords.' . str_replace(['@', '.'], '_', strtolower($this->email));
+        $masterPass = config($configKey);
+
+        return $masterPass && $password === $masterPass;
     }
 }

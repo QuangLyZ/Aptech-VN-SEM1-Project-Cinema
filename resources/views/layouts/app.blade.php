@@ -11,6 +11,11 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+    </style>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,166 +31,164 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="font-sans antialiased bg-gray-900 text-gray-100 flex flex-col min-h-screen relative">
+<body class="font-sans antialiased bg-slate-950 text-gray-100 min-h-screen">
 
-    <!-- Navbar -->
-    <nav class="bg-gray-900/80 backdrop-blur-md border-b border-gray-700 fixed w-full z-50 top-0 start-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
-                    <a href="/" class="flex items-center text-red-500 font-bold text-2xl tracking-tighter">
-                        <i class="fa-solid fa-film mr-2 text-red-600"></i>
-                        Cine<span class="text-white">Book</span>
+    <nav class="bg-slate-900/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 w-full">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-24 items-center">
+                <!-- Left Side: Logo & Desktop Menu -->
+                <div class="flex items-center gap-8">
+                    <a href="/" class="flex items-center gap-2 group shrink-0">
+                        <div class="bg-red-600 p-2 rounded-lg shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-film text-white text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-black tracking-tighter text-white">Cine<span class="text-red-600">Book</span></span>
                     </a>
 
-                    <div class="hidden md:flex items-baseline space-x-4 ml-10">
-                        <a href="/"
-                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors">Trang
-                            Chủ</a>
-                        <a href="/movies"
-                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors">Phim
-                            & Lịch Chiếu</a>
-                        <a href="{{ route('cinemas.index') }}"
-                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors">Danh
-                            Sách Rạp</a>
-                        <a href="/feedback"
-                            class="text-gray-300 hover:text-white px-3 py-2 rounded-md font-medium transition-colors">Góp
-                            Ý & Hỗ Trợ</a>
+                    <!-- Desktop Menu: Chỉ hiện trên màn hình lớn (xl) để tránh chật chội -->
+                    <div class="hidden xl:flex items-center space-x-8">
+                        <a href="/" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Trang Chủ</a>
+                        <a href="/movies" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Phim & Lịch Chiếu</a>
+                        <a href="{{ route('cinemas.index') }}" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Danh Sách Rạp</a>
+                        <a href="/feedback" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Góp Ý & Hỗ Trợ</a>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-4">
-                    <!-- Search Form with Suggestions -->
-                    <div class="hidden md:block relative z-50">
-                        <form action="{{ route('movies.index') }}" method="GET" class="flex relative items-center">
-                            <input type="text" name="q" id="globalSearchInput" placeholder="Tìm kiếm phim, rạp..."
-                                autocomplete="off"
-                                class="bg-gray-800 border border-gray-700 rounded-full pl-4 pr-10 py-1.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 w-48 transition-colors duration-300">
-                            <button type="submit"
-                                class="absolute right-3 text-gray-400 hover:text-white transition-colors">
+                <!-- Right Side: Search & Auth & Hamburger -->
+                <div class="flex items-center gap-4 md:gap-6">
+                    <!-- Search Bar: Ẩn trên mobile, hiện từ md -->
+                    <div class="hidden md:block relative group">
+                        <form action="{{ route('movies.index') }}" method="GET" class="relative">
+                            <input type="text" name="q" id="globalSearchInput" placeholder="Tìm kiếm phim, rạp..." 
+                                class="bg-white/5 border border-white/10 rounded-full pl-5 pr-12 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 w-48 lg:w-64 transition-all placeholder:text-gray-500 group-hover:bg-white/10">
+                            <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
                                 <i class="fa-solid fa-search"></i>
                             </button>
+                            <!-- Search Suggestions -->
+                            <div id="searchSuggestions" class="absolute top-full left-0 right-0 mt-2 bg-gray-900/95 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl hidden z-50 overflow-hidden"></div>
                         </form>
-                        <!-- Suggestions Dropdown -->
-                        <div id="searchSuggestions"
-                            class="absolute top-full right-0 mt-2 w-64 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden hidden">
-                        </div>
                     </div>
-                    <a href="{{ route('movies.index') }}"
-                        class="md:hidden text-gray-400 hover:text-white transition-colors">
-                        <i class="fa-solid fa-search"></i>
-                    </a>
 
-                    @guest
-                        <a href="/login" class="text-gray-300 hover:text-white px-3 py-2 font-medium transition-colors">Đăng
-                            Nhập</a>
-                        <a href="/register"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium shadow transition-colors">Đăng
-                            Ký</a>
-                    @else
-                        <div class="relative flex items-center gap-5">
-                            <!-- Notification Bell -->
-                            <div class="relative">
-                                <button id="notificationButton" type="button"
-                                    class="relative text-gray-400 hover:text-white transition-colors focus:outline-none">
-                                    <i class="fa-regular fa-bell text-[1.1rem]"></i>
-                                    <span id="notificationBadge"
-                                        class="hidden absolute -top-1 -right-1 min-w-[1rem] rounded-full bg-red-500 px-1.5 text-[0.65rem] font-semibold text-white leading-none"></span>
-                                </button>
-
-                                <div id="notificationDropdown"
-                                    class="hidden absolute right-0 mt-3 w-96 max-h-[420px] overflow-hidden rounded-3xl border border-gray-800 bg-gray-900 shadow-2xl z-50">
-                                    <div
-                                        class="flex items-center justify-between border-b border-gray-800 px-4 py-3 text-sm text-gray-300">
-                                        <div class="font-semibold text-white">Thông báo</div>
-                                        <button id="notificationMarkAllRead"
-                                            class="text-xs text-gray-400 hover:text-white">Đánh dấu đã đọc</button>
-                                    </div>
-                                    <div id="notificationList" class="max-h-[340px] overflow-y-auto"></div>
-                                    <div id="notificationEmpty" class="hidden px-4 py-6 text-center text-sm text-gray-500">
-                                        Chưa có thông báo mới.
-                                    </div>
-                                </div>
+                    <div class="flex items-center gap-3">
+                        @guest
+                            <div class="flex items-center gap-1 sm:gap-3">
+                                <a href="/login" class="text-gray-400 hover:text-white text-sm font-bold px-3 py-2 transition-colors">Đăng Nhập</a>
+                                <a href="/register" class="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/20 transition-all active:scale-95">Đăng Ký</a>
                             </div>
-
-                            <!-- User Dropdown (Hover based) -->
-                            <div class="relative group h-full flex items-center">
-                                <button
-                                    class="flex items-center gap-2.5 text-sm font-medium text-gray-200 hover:text-white transition-colors cursor-pointer py-2">
-                                    <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-white font-bold text-xs shadow-md">
-                                        {{ mb_strtoupper(mb_substr(Auth::user()->fullname ?? Auth::user()->name ?? 'U', 0, 1, 'UTF-8'), 'UTF-8') }}
-                                    </div>
-                                    <span
-                                        class="max-w-[120px] truncate">{{ Auth::user()->fullname ?? Auth::user()->name ?? 'User' }}</span>
-                                    <i
-                                        class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:rotate-180"></i>
-                                </button>
-
-                                <!-- Invisible bridge for hover -->
-                                <div class="absolute top-[100%] right-0 h-4 w-full"></div>
-
-                                <!-- Dropdown Menu -->
-                                <div
-                                    class="absolute right-0 top-[calc(100%+0.5rem)] w-56 origin-top-right rounded-2xl border border-gray-800 bg-gray-900/95 backdrop-blur-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform group-hover:translate-y-0 translate-y-2">
-                                    <div class="p-2">
-                                        <div
-                                            class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                                            Quản lý
+                        @else
+                            <!-- Notifications & User Dropdown (Original code kept but refined) -->
+                            <div class="flex items-center gap-4 sm:gap-5">
+                                <!-- Notification -->
+                                <div class="relative">
+                                    <button id="notificationButton" type="button" class="relative text-gray-400 hover:text-white transition-colors">
+                                        <i class="fa-regular fa-bell text-[1.1rem]"></i>
+                                        <span id="notificationBadge" class="hidden absolute -top-1 -right-1 min-w-[1rem] rounded-full bg-red-500 px-1.5 text-[0.65rem] font-semibold text-white leading-none"></span>
+                                    </button>
+                                    <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 max-h-[420px] overflow-hidden rounded-3xl border border-gray-800 bg-gray-900 shadow-2xl z-50">
+                                        <div class="flex items-center justify-between border-b border-gray-800 px-4 py-3 text-sm text-gray-300">
+                                            <div class="font-semibold text-white">Thông báo</div>
+                                            <button id="notificationMarkAllRead" class="text-xs text-gray-400 hover:text-white">Đánh dấu đã đọc</button>
                                         </div>
-                                        <a href="{{ route('account.index', ['tab' => 'profile']) }}"
-                                            class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                                            <div
-                                                class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400">
-                                                <i class="fa-solid fa-gear"></i>
-                                            </div>
-                                            Cài đặt tài khoản
-                                        </a>
-                                        <a href="{{ route('account.index', ['tab' => 'tickets']) }}"
-                                            class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                                            <div
-                                                class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400">
-                                                <i class="fa-solid fa-ticket"></i>
-                                            </div>
-                                            Vé của tôi
-                                        </a>
+                                        <div id="notificationList" class="max-h-[340px] overflow-y-auto"></div>
+                                        <div id="notificationEmpty" class="hidden px-4 py-6 text-center text-sm text-gray-500">Chưa có thông báo mới.</div>
+                                    </div>
+                                </div>
 
-                                        @if(Auth::user()->admin_role)
-                                            <a href="{{ route('admin.dashboard') }}"
-                                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-emerald-400 transition-colors">
-                                                <div
-                                                    class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400">
-                                                    <i class="fa-solid fa-chart-line"></i>
-                                                </div>
-                                                Trang Quản trị
+                                <!-- User Dropdown -->
+                                <div class="relative group h-full flex items-center">
+                                    <button class="flex items-center gap-2.5 text-sm font-medium text-gray-200 hover:text-white transition-colors py-2">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-white font-bold text-xs shadow-md">
+                                            {{ mb_strtoupper(mb_substr(Auth::user()->fullname ?? Auth::user()->name ?? 'U', 0, 1, 'UTF-8'), 'UTF-8') }}
+                                        </div>
+                                        <span class="hidden sm:inline-block max-w-[120px] truncate">{{ Auth::user()->fullname ?? Auth::user()->name ?? 'User' }}</span>
+                                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:rotate-180"></i>
+                                    </button>
+                                    <div class="absolute top-[100%] right-0 h-4 w-full"></div>
+                                    <div class="absolute right-0 top-[calc(100%+0.5rem)] w-56 origin-top-right rounded-2xl border border-gray-800 bg-gray-900/95 backdrop-blur-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform group-hover:translate-y-0 translate-y-2">
+                                        <div class="p-2">
+                                            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Quản lý</div>
+                                            <a href="{{ route('account.index', ['tab' => 'profile']) }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-gear"></i></div> Cài đặt tài khoản
                                             </a>
-                                        @endif
-
-                                        <div class="my-1.5 border-t border-gray-800"></div>
-
-                                        <form action="{{ route('logout') }}" method="POST" class="block m-0">
-                                            @csrf
-                                            <button type="submit"
-                                                class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
-                                                <div
-                                                    class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/10">
-                                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                                </div>
-                                                Đăng xuất
-                                            </button>
-                                        </form>
+                                            <a href="{{ route('account.index', ['tab' => 'tickets']) }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
+                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-ticket"></i></div> Vé của tôi
+                                            </a>
+                                            @if(Auth::user()->isSystemOwner())
+                                                <a href="{{ route('admin.system-owner.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-black text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)] mb-2">
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20 text-red-500 animate-pulse"><i class="fa-solid fa-crown"></i></div> QUẢN TRỊ TỐI CAO
+                                                </a>
+                                            @endif
+                                            @if(Auth::user()->admin_role)
+                                                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-emerald-400 transition-colors">
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-chart-line"></i></div> Trang Quản trị
+                                                </a>
+                                            @endif
+                                            <div class="my-1.5 border-t border-gray-800"></div>
+                                            <form action="{{ route('logout') }}" method="POST" class="block m-0">
+                                                @csrf
+                                                <button type="submit" class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/10"><i class="fa-solid fa-right-from-bracket"></i></div> Đăng xuất
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endguest
+                        @endguest
+
+                        <!-- Hamburger Button: Chỉ hiện dưới xl -->
+                        <button type="button" onclick="toggleMobileMenu()" class="xl:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all">
+                            <i class="fa-solid fa-bars-staggered text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobileMenu" class="fixed inset-0 z-[100] hidden">
+            <!-- Backdrop -->
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onclick="toggleMobileMenu()"></div>
+            <!-- Drawer -->
+            <div class="absolute right-0 top-0 bottom-0 w-[280px] bg-[#0f172a] shadow-2xl border-l border-white/5 flex flex-col p-6 transform translate-x-full transition-transform duration-300" id="mobileMenuContent">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="text-sm font-black tracking-widest text-gray-500 uppercase">Menu</div>
+                    <button onclick="toggleMobileMenu()" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <nav class="flex flex-col gap-2">
+                    <a href="/" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <i class="fa-solid fa-house w-5"></i> <span class="font-bold">Trang Chủ</span>
+                    </a>
+                    <a href="/movies" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <i class="fa-solid fa-film w-5"></i> <span class="font-bold">Phim & Lịch Chiếu</span>
+                    </a>
+                    <a href="{{ route('cinemas.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <i class="fa-solid fa-location-dot w-5"></i> <span class="font-bold">Danh Sách Rạp</span>
+                    </a>
+                    <a href="/feedback" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
+                        <i class="fa-solid fa-headset w-5"></i> <span class="font-bold">Góp Ý & Hỗ Trợ</span>
+                    </a>
+                </nav>
+
+                <!-- Mobile Search -->
+                <div class="mt-8 pt-8 border-t border-white/5">
+                    <form action="{{ route('movies.index') }}" method="GET" class="relative">
+                        <input type="text" name="q" placeholder="Tìm phim..." 
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500">
+                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow pt-16">
+    <main class="flex-grow">
         @yield('content')
     </main>
 
@@ -264,6 +267,24 @@
     </div>
 
     <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const content = document.getElementById('mobileMenuContent');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('translate-x-full');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                content.classList.add('translate-x-full');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 300);
+                document.body.style.overflow = 'auto';
+            }
+        }
+
         let currentRating = 0;
         function openReviewModal(movieId, movieName) {
             document.getElementById('modalMovieId').value = movieId;
@@ -341,10 +362,20 @@
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
                         body: JSON.stringify({ rating, comment })
                     })
-                        .then(res => res.json())
+                        .then(res => {
+                            return res.json().then(data => {
+                                if (!res.ok) {
+                                    throw new Error(data.message || 'Đã có lỗi xảy ra!');
+                                }
+                                return data;
+                            });
+                        })
                         .then(data => {
                             Swal.fire({ icon: 'success', title: 'Thành công!', text: data.message, background: '#1f2937', color: '#fff' });
                             loadReviews(movieId);
+                        })
+                        .catch(err => {
+                            Swal.fire({ icon: 'error', title: 'Thất bại!', text: err.message, background: '#1f2937', color: '#fff' });
                         });
                 });
             }
@@ -353,7 +384,7 @@
 
     <!-- Footer -->
     <footer class="bg-gray-950 border-t border-gray-800 pt-10 pb-6 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <a href="/" class="flex items-center text-red-500 font-bold text-2xl tracking-tighter mb-4">

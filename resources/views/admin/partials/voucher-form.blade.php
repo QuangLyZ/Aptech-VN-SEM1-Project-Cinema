@@ -56,13 +56,15 @@
 <div class="grid gap-4 sm:grid-cols-2">
     <div>
         <label class="mb-1.5 block text-sm font-semibold text-gray-300">Ngày bắt đầu</label>
-        <input type="date" name="starts_at" value="{{ old('starts_at', $v?->starts_at?->format('Y-m-d')) }}"
-               class="w-full rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 [color-scheme:dark]">
+        <input type="text" name="starts_at" value="{{ old('starts_at', $v?->starts_at?->format('Y-m-d H:i')) }}"
+               placeholder="Chọn thời điểm bắt đầu..."
+               class="datepicker w-full rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer">
     </div>
     <div>
         <label class="mb-1.5 block text-sm font-semibold text-gray-300">Ngày hết hạn</label>
-        <input type="date" name="expires_at" value="{{ old('expires_at', $v?->expires_at?->format('Y-m-d')) }}"
-               class="w-full rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 [color-scheme:dark]">
+        <input type="text" name="expires_at" value="{{ old('expires_at', $v?->expires_at?->format('Y-m-d H:i')) }}"
+               placeholder="Chọn thời điểm kết thúc..."
+               class="datepicker w-full rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer">
     </div>
 </div>
 

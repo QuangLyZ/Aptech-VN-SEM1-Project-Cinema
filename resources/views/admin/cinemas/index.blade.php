@@ -18,10 +18,17 @@
                 <p class="mt-1 text-sm text-gray-400">Quản lý toàn bộ cụm rạp và phòng chiếu trong hệ thống.</p>
             </div>
         </div>
-        <a href="{{ route('admin.cinemas.create') }}"
-           class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-900/30 transition hover:bg-sky-700">
-            <i class="fa-solid fa-plus"></i> Thêm Rạp Mới
-        </a>
+        @if(auth()->user()->isSystemOwner())
+            <a href="{{ route('admin.cinemas.create') }}"
+               class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-900/30 transition hover:bg-sky-700">
+                <i class="fa-solid fa-plus"></i> Thêm Rạp Mới
+            </a>
+        @else
+            <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-800 px-5 py-2.5 text-sm font-bold text-gray-400 border border-gray-700 cursor-not-allowed">
+                <i class="fa-solid fa-chart-line"></i>
+                Chế độ Theo dõi
+            </button>
+        @endif
     </div>
 
     {{-- Flash Messages --}}
@@ -66,23 +73,29 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right border-l border-gray-800/50">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.cinemas.edit', $cinema) }}"
-                                       class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 transition hover:bg-sky-500/20"
-                                       title="Chỉnh sửa">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('admin.cinemas.destroy', $cinema) }}" method="POST"
-                                          onsubmit="return confirm('Xóa rạp {{ $cinema->name }}? Tất cả phòng chiếu liên quan cũng sẽ bị xóa!');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
-                                                title="Xóa rạp">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                @if(auth()->user()->isSystemOwner())
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.cinemas.edit', $cinema) }}"
+                                           class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 transition hover:bg-sky-500/20"
+                                           title="Chỉnh sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <form action="{{ route('admin.cinemas.destroy', $cinema) }}" method="POST"
+                                              onsubmit="return confirm('Xóa rạp {{ $cinema->name }}? Tất cả phòng chiếu liên quan cũng sẽ bị xóa!');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                                                    title="Xóa rạp">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="text-[10px] font-bold text-sky-500 uppercase tracking-widest bg-sky-500/5 px-3 py-1.5 rounded-lg border border-sky-500/20">
+                                        <i class="fa-solid fa-lock mr-1"></i> Read Only
+                                    </span>
+                                @endif
                             </td>
                         </tr>
                     @empty

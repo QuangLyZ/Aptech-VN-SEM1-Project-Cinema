@@ -39,11 +39,16 @@ class Movie extends Model
 
     public function getAverageRatingAttribute()
     {
-        return round($this->reviews()->where('is_visible', true)->avg('rating'), 1) ?: 0;
+        // GRACE: Tối ưu cực độ - Sử dụng giá trị đã load trước (Eager Loading) nếu có
+        $count = $this->reviews_count ?? $this->reviews()->where('is_visible', true)->count();
+        $sum = $this->reviews_sum_rating ?? $this->reviews()->where('is_visible', true)->sum('rating');
+        
+        // Công thức: (Tổng điểm + 5 điểm nền) / (Số lượt đánh giá + 1)
+        return round(($sum + 5) / ($count + 1), 1);
     }
 
     public function getReviewCountAttribute()
     {
-        return $this->reviews()->where('is_visible', true)->count();
+        return $this->reviews_count ?? $this->reviews()->where('is_visible', true)->count();
     }
 }

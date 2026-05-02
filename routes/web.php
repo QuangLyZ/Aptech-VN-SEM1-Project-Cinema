@@ -39,6 +39,7 @@ Route::get('/', [MovieController::class, 'index'])->name('home');
 
 // Auth
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('/system-owner-portal', [AuthController::class, 'showSystemOwnerLoginForm'])->name('system-owner.portal');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -176,4 +177,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/tickets-export', [App\Http\Controllers\Admin\TicketController::class, 'exportCsv'])->name('tickets.export');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::resource('posts', App\Http\Controllers\Admin\PostController::class);
+
+    // Dành riêng cho Quản trị viên cấp cao (System Owner)
+    Route::middleware(['system_owner'])->group(function () {
+        Route::get('/system-owner', [App\Http\Controllers\Admin\SystemOwnerController::class, 'index'])->name('system-owner.index');
+        Route::put('/system-owner/users/{user}/role', [App\Http\Controllers\Admin\SystemOwnerController::class, 'updateRole'])->name('system-owner.update-role');
+        
+        // Quản lý Sub-Owners (Chỉ dành cho Root Owner)
+        Route::post('/system-owner/sub-owners', [App\Http\Controllers\Admin\SystemOwnerController::class, 'addSubOwner'])->name('system-owner.sub-owners.store');
+        Route::delete('/system-owner/sub-owners/{subOwner}', [App\Http\Controllers\Admin\SystemOwnerController::class, 'removeSubOwner'])
+            ->name('system-owner.sub-owners.destroy');
+    });
 });

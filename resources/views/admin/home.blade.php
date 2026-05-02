@@ -789,7 +789,7 @@
                             <input type="text" name="code" value="{{ old('code', $editingVoucher->code ?? '') }}" placeholder="Ví dụ: SUMMER25" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white placeholder-gray-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
                         </div>
 
-                        <div class="grid gap-5 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-5">
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-300">Loại giảm giá</label>
                                 <select name="discount_type" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
@@ -803,7 +803,7 @@
                             </label>
                         </div>
 
-                        <div class="grid gap-5 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-5">
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-300">Giảm theo tiền (VND)</label>
                                 <input type="number" step="0.01" min="0" name="discount_value" value="{{ old('discount_value', $editingVoucher->discount_value ?? '') }}" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white placeholder-gray-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
@@ -819,14 +819,14 @@
                             <textarea name="description" rows="4" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white placeholder-gray-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">{{ old('description', $editingVoucher->description ?? '') }}</textarea>
                         </div>
 
-                        <div class="grid gap-5 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-5">
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-300">Bắt đầu áp dụng</label>
-                                <input type="datetime-local" name="starts_at" value="{{ old('starts_at', optional($editingVoucher?->starts_at)->format('Y-m-d\\TH:i')) }}" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                                <input type="text" name="starts_at" value="{{ old('starts_at', optional($editingVoucher?->starts_at)->format('Y-m-d H:i')) }}" class="datepicker w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20" placeholder="Chọn ngày bắt đầu">
                             </div>
                             <div>
                                 <label class="mb-2 block text-sm font-semibold text-gray-300">Hết hạn</label>
-                                <input type="datetime-local" name="expires_at" value="{{ old('expires_at', optional($editingVoucher?->expires_at)->format('Y-m-d\\TH:i')) }}" class="w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                                <input type="text" name="expires_at" value="{{ old('expires_at', optional($editingVoucher?->expires_at)->format('Y-m-d H:i')) }}" class="datepicker w-full rounded-2xl border border-gray-700 bg-black/50 px-4 py-3 text-white transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20" placeholder="Chọn ngày hết hạn">
                             </div>
                         </div>
 
@@ -856,16 +856,18 @@
         @php
             $modules = [
                 [
+                    'id'      => 'movies',
                     'title'   => 'Quản lý Phim',
-                    'desc'    => 'Thêm, sửa, xoá phim, poster và thông tin nội dung.',
+                    'desc'    => 'Xem danh sách phim và dữ liệu doanh thu chi tiết.',
                     'icon'    => 'fa-film',
                     'color'   => 'red',
                     'count_label' => 'Phim trong hệ thống',
                     'count'   => \App\Models\Movie::count(),
                     'route'   => route('admin.movies.index'),
-                    'add_route' => route('admin.movies.create'),
+                    'add_route' => null,
                 ],
                 [
+                    'id'      => 'reviews',
                     'title'   => 'Đánh giá & Review',
                     'desc'    => 'Quản lý các lượt đánh giá sao và bình luận từ khách hàng.',
                     'icon'    => 'fa-star',
@@ -876,28 +878,31 @@
                     'add_route' => null,
                 ],
                 [
+                    'id'      => 'cinemas',
                     'title'   => 'Quản lý Rạp',
-                    'desc'    => 'Quản lý rạp chiếu, phòng chiếu và sơ đồ ghế ngồi.',
+                    'desc'    => 'Xem thông tin rạp chiếu, phòng chiếu và cơ sở hạ tầng.',
                     'icon'    => 'fa-building',
                     'color'   => 'sky',
                     'count_label' => 'Rạp đang hoạt động',
                     'count'   => \App\Models\Cinema::count(),
                     'route'   => route('admin.cinemas.index'),
-                    'add_route' => route('admin.cinemas.create'),
+                    'add_route' => null,
                 ],
                 [
+                    'id'      => 'showtimes',
                     'title'   => 'Suất Chiếu',
-                    'desc'    => 'Lập lịch và quản lý các suất chiếu theo ngày, phòng.',
+                    'desc'    => 'Theo dõi lịch chiếu và thống kê tỷ lệ lấp đầy ghế.',
                     'icon'    => 'fa-calendar-days',
                     'color'   => 'violet',
                     'count_label' => 'Suất chiếu đã tạo',
                     'count'   => \App\Models\Showtime::count(),
                     'route'   => route('admin.showtimes.index'),
-                    'add_route' => route('admin.showtimes.create'),
+                    'add_route' => null,
                 ],
                 [
+                    'id'      => 'tickets',
                     'title'   => 'Quản lý Vé',
-                    'desc'    => 'Theo dõi đặt vé, trạng thái thanh toán và lịch sử.',
+                    'desc'    => 'Theo dõi đặt vé, trạng thái thanh toán và doanh thu.',
                     'icon'    => 'fa-ticket',
                     'color'   => 'amber',
                     'count_label' => 'Vé đã đặt',
@@ -906,8 +911,9 @@
                     'add_route' => null,
                 ],
                 [
+                    'id'      => 'users',
                     'title'   => 'Người Dùng',
-                    'desc'    => 'Xem và quản lý tài khoản, phân quyền người dùng.',
+                    'desc'    => 'Xem danh sách và phân tích hành vi khách hàng.',
                     'icon'    => 'fa-users',
                     'color'   => 'emerald',
                     'count_label' => 'Tài khoản đã đăng ký',
@@ -916,14 +922,15 @@
                     'add_route' => null,
                 ],
                 [
+                    'id'      => 'posts',
                     'title'   => 'Bài Viết',
-                    'desc'    => 'Theo dõi bài viết tin tức, ưu đãi và thông báo.',
+                    'desc'    => 'Soạn thảo tin tức, ưu đãi và thông báo hệ thống.',
                     'icon'    => 'fa-newspaper',
                     'color'   => 'pink',
                     'count_label' => 'Bài viết đã đăng',
                     'count'   => \App\Models\Post::count(),
                     'route'   => route('admin.posts.index'),
-                    'add_route' => null,
+                    'add_route' => route('admin.posts.create'),
                 ],
             ];
 
@@ -936,6 +943,9 @@
                 'emerald'=> ['bg' => 'bg-emerald-500/10','text' => 'text-emerald-400','border' => 'border-emerald-500/30','badge' => 'bg-emerald-600','hover' => 'hover:border-emerald-500/40'],
                 'pink'   => ['bg' => 'bg-pink-500/10',   'text' => 'text-pink-400',   'border' => 'border-pink-500/30',   'badge' => 'bg-pink-600',   'hover' => 'hover:border-pink-500/40'],
             ];
+
+            // Grace: Danh sách các module bị khóa CRUD đối với Administrator thường
+            $restrictedModules = ['movies', 'cinemas', 'showtimes', 'tickets', 'users'];
         @endphp
 
         <div class="space-y-8 animate-[fadeIn_0.5s_ease-in-out]">
@@ -956,14 +966,17 @@
                 </div>
                 <div class="flex items-center gap-3 text-sm text-gray-500">
                     <i class="fa-solid fa-circle-dot text-emerald-400 animate-pulse"></i>
-                    Hệ thống đang hoạt động bình thường
+                    Chế độ: {{ Auth::user()->isSystemOwner() ? 'System Owner' : 'Administrator' }}
                 </div>
             </div>
 
             {{-- Module Cards --}}
             <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($modules as $mod)
-                    @php $c = $colorMap[$mod['color']]; @endphp
+                    @php 
+                        $c = $colorMap[$mod['color']]; 
+                        $isRestricted = in_array($mod['id'], $restrictedModules) && !Auth::user()->isSystemOwner();
+                    @endphp
                     <div class="group flex flex-col rounded-[2rem] border border-gray-800 bg-gray-900/80 p-6 shadow-lg shadow-black/10 transition duration-200 hover:bg-gray-900 {{ $c['hover'] }}">
                         {{-- Icon + Count --}}
                         <div class="flex items-start justify-between gap-4">
@@ -978,7 +991,15 @@
 
                         {{-- Title + Desc --}}
                         <div class="mt-5 flex-1">
-                            <h3 class="text-lg font-bold text-white">{{ $mod['title'] }}</h3>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-bold text-white">{{ $mod['title'] }}</h3>
+                                @if($isRestricted)
+                                    <span class="inline-flex items-center gap-1 text-[10px] text-amber-500/80 font-bold uppercase tracking-wider bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
+                                        <i class="fa-solid fa-lock"></i>
+                                        Read Only
+                                    </span>
+                                @endif
+                            </div>
                             <p class="mt-1.5 text-sm leading-6 text-gray-400">{{ $mod['desc'] }}</p>
                         </div>
 
@@ -986,15 +1007,19 @@
                         <div class="mt-6 flex items-center gap-3">
                             <a href="{{ $mod['route'] }}"
                                class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl {{ $c['badge'] }} px-4 py-2.5 text-sm font-bold text-white shadow transition hover:opacity-90">
-                                <i class="fa-solid fa-table-list"></i>
-                                Xem danh sách
+                                <i class="fa-solid fa-{{ $isRestricted ? 'chart-simple' : 'table-list' }}"></i>
+                                {{ $isRestricted ? 'Xem thống kê' : 'Xem danh sách' }}
                             </a>
-                            @if ($mod['add_route'])
+                            @if ($mod['add_route'] && !$isRestricted)
                                 <a href="{{ $mod['add_route'] }}"
                                    class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-700 bg-gray-950 px-3.5 py-2.5 text-sm font-semibold text-gray-300 transition hover:border-gray-500 hover:text-white"
                                    title="Thêm mới">
                                     <i class="fa-solid fa-plus"></i>
                                 </a>
+                            @elseif($isRestricted)
+                                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-800 text-gray-600" title="Chế độ Read-Only">
+                                    <i class="fa-solid fa-ban"></i>
+                                </div>
                             @endif
                         </div>
                     </div>

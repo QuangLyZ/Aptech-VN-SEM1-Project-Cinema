@@ -2,10 +2,14 @@
 
 namespace App\Notifications;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class PromotionNotification extends Notification
+class PromotionNotification extends Notification implements ShouldQueue
 {
+    use Queueable;
+
     public function __construct(
         protected string $title,
         protected string $message,

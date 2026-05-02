@@ -165,20 +165,20 @@
                         {{-- Badges --}}
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex gap-2">
-                                <span class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                                <span class="bg-red-600 text-white text-sm font-black px-3 py-1 rounded-lg shadow-lg border border-red-500/50">
                                     {{ $movie->age_limit ? 'T' . $movie->age_limit : 'P' }}
                                 </span>
                                 @if(isset($movie->showtimes) && count($movie->showtimes) > 0)
-                                    <span class="text-xs border border-blue-500 text-blue-400 px-2 py-0.5 rounded">
+                                    <span class="text-xs border border-blue-500/50 bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg backdrop-blur-sm">
                                         {{ $movie->showtimes[0]->subtitle_name ?: '2D Phụ Đề' }}
                                     </span>
                                 @endif
-                                <button onclick="openReviewModal({{ $movie->id }}, '{{ addslashes($movie->name) }}')" class="text-xs border border-gray-600 text-gray-400 px-2 py-0.5 rounded hover:text-yellow-500 hover:border-yellow-500 transition-colors">
+                                <button onclick="openReviewModal({{ $movie->id }}, '{{ addslashes($movie->name) }}')" class="text-xs border border-gray-600/50 bg-gray-600/10 text-gray-400 px-3 py-1 rounded-lg hover:text-yellow-500 hover:border-yellow-500 hover:bg-yellow-500/10 transition-all backdrop-blur-sm">
                                     <i class="fa-regular fa-comment-dots mr-1"></i>Đánh giá
                                 </button>
                             </div>
-                            <div class="text-yellow-500 text-sm font-bold flex items-center">
-                                <i class="fa-solid fa-star mr-1"></i>{{ number_format($movie->average_rating ?? 0, 1) }}
+                            <div class="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-lg text-yellow-500 text-base font-black flex items-center shadow-lg">
+                                <i class="fa-solid fa-star mr-1.5"></i>{{ number_format($movie->average_rating ?? 0, 1) }}
                             </div>
                         </div>
 

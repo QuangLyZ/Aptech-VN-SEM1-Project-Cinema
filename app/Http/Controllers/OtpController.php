@@ -24,6 +24,7 @@ class OtpController extends Controller
         $userData = Cache::get('register_data_' . $email);
         $newOtpCode = rand(100000, 999999);
         $userData['otp'] = $newOtpCode;
+        $userData['expires_at'] = time() + 300; // Grace: Reset thời gian 5 phút mới
 
         // Cập nhật lại cache với OTP mới, reset 5 phút
         Cache::put('register_data_' . $email, $userData, now()->addMinutes(5));
@@ -44,7 +45,18 @@ class OtpController extends Controller
     // B2: Hiện giao diện nhập OTP
     public function showVerifyForm()
     {
-        return view('auth.verify-otp');
+        $email = Session::get('verify_email');
+        if (!$email || !Cache::has('register_data_' . $email)) {
+            return redirect()->route('register')->with('error', 'Phiên xác thực đã hết hạn. Vui lòng đăng ký lại từ đầu.');
+        }
+
+        // Grace: Lấy thời gian còn lại (giả định 5 phút từ lúc tạo cache)
+        // Lưu ý: Cache::put không trả về thời gian còn lại dễ dàng, 
+        // nên ta sẽ lưu thêm một timestamp lúc tạo để tính toán.
+        $userData = Cache::get('register_data_' . $email);
+        $expiresAt = $userData['expires_at'] ?? (time() + 300);
+
+        return view('auth.verify-otp', compact('expiresAt'));
     }
 
     // B3: Kiểm tra OTP user nhập vào có đúng không
@@ -54,19 +66,29 @@ class OtpController extends Controller
             'otp' => 'required|numeric'
         ]);
 
-        // Lấy email đang cần xác thực từ Session
         $email = Session::get('verify_email');
 
         if (!$email) {
             return redirect()->route('register')->with('error', 'Không tìm thấy phiên xác thực. Vui lòng đăng ký lại.');
         }
 
-        // Lấy thông tin khách hàng từ Cache
         $userData = Cache::get('register_data_' . $email);
 
-        // Kiểm tra xem khách có đăng ký chưa và mã nhập vào có giống mã trong Cache không
-        if ($userData && $request->otp == $userData['otp']) {
-            // Đúng thì CHÍNH THỨC TẠO USER VÀO DATABASE
+        // Grace: Nếu không tìm thấy userData trong Cache = Đã hết hạn 5 phút
+        if (!$userData) {
+            Session::forget('verify_email');
+            return redirect()->route('register')->with('error', 'Mã OTP của bạn đã hết hạn (quá 5 phút). Vui lòng đăng ký lại.');
+        }
+
+        // Kiểm tra mã nhập vào
+        if ($request->otp == $userData['otp']) {
+            // Kiểm tra một lần nữa tránh trùng lặp Email trong DB (đề phòng race condition)
+            if (User::where('email', $userData['email'])->exists()) {
+                 Cache::forget('register_data_' . $email);
+                 Session::forget('verify_email');
+                 return redirect()->route('login')->with('error', 'Email này đã được đăng ký thành công trước đó.');
+            }
+
             $user = User::create([
                 'fullname' => $userData['fullname'],
                 'email' => $userData['email'],
@@ -75,22 +97,15 @@ class OtpController extends Controller
                 'admin_role' => $userData['admin_role'] ?? false,
             ]);
 
-            // Xóa rác Cache và Session cho sạch sẽ
             Cache::forget('register_data_' . $email);
             Session::forget('verify_email');
 
-            // Cho đăng nhập luôn cho nóng
             Auth::login($user);
 
-            // Hiện thông báo mừng rỡ
             return redirect()->to($user->admin_role ? route('admin.dashboard') : route('home'))
-                ->with('success', 'Đăng ký và xác thực thành công.');
+                ->with('success', 'Đăng ký và xác thực thành công! Chào mừng bạn đến với CineBook (◕‿-)v');
         }
 
-        // Khôi phục lại session verify_email để họ nhập lại cho tiện
-        Session::put('verify_email', $email);
-
-        // Sai thì bắt nhập lại
         return back()->with('error', 'Mã OTP không chính xác. Vui lòng kiểm tra lại.');
     }
 }

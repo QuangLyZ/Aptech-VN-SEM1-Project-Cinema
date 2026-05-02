@@ -94,8 +94,14 @@
             {{-- Start Time --}}
             <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-300">Thời gian bắt đầu <span class="text-red-400">*</span></label>
-                <input type="datetime-local" name="start_time" value="{{ old('start_time') }}"
-                       class="w-full rounded-xl border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20">
+                <div class="relative group">
+                    <input type="text" name="start_time" id="start_time_picker" value="{{ old('start_time') }}"
+                           placeholder="Chọn ngày và giờ chiếu..."
+                           class="datepicker w-full rounded-xl border border-gray-700 bg-black/50 px-4 py-3 text-white focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all cursor-pointer">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 group-hover:text-violet-400 transition-colors pointer-events-none">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                </div>
                 <p class="mt-2 text-xs text-gray-500">
                     <i class="fa-solid fa-shield-halved mr-1 text-violet-400"></i>
                     Hệ thống sẽ tự động kiểm tra trùng lịch với các suất chiếu trong cùng phòng.

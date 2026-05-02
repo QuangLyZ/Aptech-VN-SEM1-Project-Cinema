@@ -116,11 +116,12 @@ class VoucherController extends Controller
                     continue;
                 }
 
-                $user->notify(new PromotionNotification(
+                // Grace: Sử dụng queue để gửi thông báo không làm treo hệ thống
+                $user->notify((new PromotionNotification(
                     $title,
                     $message,
                     route('movies.index')
-                ));
+                ))->delay(now()->addSeconds(5)));
             }
         });
     }
@@ -150,8 +151,8 @@ class VoucherController extends Controller
             'discount_value' => ['nullable', 'numeric', 'min:0'],
             'discount_rate' => ['nullable', 'integer', 'between:1,100'],
             'description' => ['nullable', 'string'],
-            'starts_at' => ['nullable', 'date'],
-            'expires_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'starts_at' => ['nullable', 'date', $voucher ? 'nullable' : 'after_or_equal:today'],
+            'expires_at' => ['nullable', 'date', 'after_or_equal:starts_at', 'after:now'],
             'usage_limit' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
         ], [
@@ -159,7 +160,9 @@ class VoucherController extends Controller
             'code.unique' => 'Mã voucher này đã tồn tại.',
             'discount_type.required' => 'Chọn loại giảm giá.',
             'discount_rate.between' => 'Phần trăm giảm phải từ 1 đến 100.',
+            'starts_at.after_or_equal' => 'Thời gian bắt đầu không được ở quá khứ.',
             'expires_at.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.',
+            'expires_at.after' => 'Thời gian hết hạn phải ở tương lai.',
         ]);
 
         if ($data['discount_type'] === 'value') {

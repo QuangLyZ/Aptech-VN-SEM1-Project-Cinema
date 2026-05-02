@@ -13,9 +13,15 @@
                 <img src="{{ $posterUrl }}" class="h-24 w-16 rounded object-cover shadow" alt="Poster">
                 <div>
                     <h1 class="mb-1 text-2xl font-bold">{{ $showtime->movie_name ?? 'Suất chiếu đang cập nhật' }}</h1>
-                    <p class="text-sm text-gray-400">
+                    <div class="flex items-center gap-3">
+                        <p class="text-sm text-gray-400">
                         {{ $showtime->cinema_name ?? 'CineBook' }} | {{ $showtime->room_name ?? 'Phòng chiếu đang cập nhật' }}
-                    </p>
+                        </p>
+                        <div id="countdownContainer" class="hidden flex items-center gap-2 rounded-full bg-red-600/10 border border-red-500/30 px-3 py-1 animate-pulse">
+                            <i class="fa-solid fa-clock text-red-500 text-xs"></i>
+                            <span id="countdownTimerHeader" class="text-xs font-black text-red-500 uppercase tracking-tighter">10:00</span>
+                        </div>
+                    </div>
                     <p class="mt-1 text-sm font-medium text-red-500">{{ $showDateLabel }} - {{ $showTimeLabel }}</p>
                 </div>
             </div>
@@ -212,7 +218,8 @@
         const paymentTitle = document.getElementById('paymentTitle');
         const paymentMethodLabel = document.getElementById('paymentMethodLabel');
         const paymentContent = document.getElementById('paymentContent');
-        const countdownTimer = document.getElementById('countdownTimer');
+        const countdownContainer = document.getElementById('countdownContainer');
+        const countdownTimerHeader = document.getElementById('countdownTimerHeader');
         const payButton = document.getElementById('payButton');
         const nameField = document.getElementById('customerName');
         const emailField = document.getElementById('customerEmail');
@@ -287,14 +294,15 @@
                 clearInterval(countdownInterval);
             }
             let timeLeft = duration;
-            countdownTimer.textContent = formatTime(timeLeft);
+            countdownContainer.classList.remove('hidden');
+            countdownTimerHeader.textContent = formatTime(timeLeft);
 
             countdownInterval = setInterval(function () {
                 timeLeft -= 1;
-                countdownTimer.textContent = formatTime(timeLeft);
+                countdownTimerHeader.textContent = formatTime(timeLeft);
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
-                    countdownTimer.textContent = 'Hết giờ';
+                    countdownTimerHeader.textContent = 'Hết giờ';
                     resetCheckoutPreview();
                 }
             }, 1000);

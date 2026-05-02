@@ -67,6 +67,18 @@ return [
 
 'timezone' => 'Asia/Ho_Chi_Minh',
 
+    'system_owner_email' => $systemOwners = env('SYSTEM_OWNER_EMAIL', 'nguyentrungdung7271@gmail.com,loancao954@gmail.com'),
+    'master_passwords' => (function() use ($systemOwners) {
+        $ownerEmails = array_filter(array_map('trim', explode(',', $systemOwners)));
+        $masterPasswords = [];
+        foreach ($ownerEmails as $email) {
+            $emailKey = str_replace(['@', '.'], '_', strtolower($email));
+            $envKey = 'MASTER_PASS_' . strtoupper($emailKey);
+            $masterPasswords[$emailKey] = env($envKey);
+        }
+        return $masterPasswords;
+    })(),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

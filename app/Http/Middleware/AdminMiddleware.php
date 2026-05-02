@@ -12,8 +12,13 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        if (! $user || ! $user->admin_role) {
-            abort(403);
+        // Grace: Đặc quyền tối thượng cho System Owner - Không gì có thể ngăn cản Sếp!
+        if ($user && $user->isSystemOwner()) {
+            return $next($request);
+        }
+
+        if (! $user || (! $user->isAdmin() && ! $user->isManager())) {
+            abort(403, 'Khu vực này chỉ dành cho nhân sự được cấp quyền.');
         }
 
         return $next($request);

@@ -75,7 +75,9 @@
 
                         <div>
                             <label for="publish_at" class="mb-2 block text-sm font-semibold text-gray-300">Thời gian đăng</label>
-                            <input id="publish_at" type="datetime-local" name="publish_at" value="{{ old('publish_at') }}" class="w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white [color-scheme:dark] focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+                            <input id="publish_at" type="text" name="publish_at" value="{{ old('publish_at') }}" 
+                                   placeholder="Chọn ngày giờ đăng bài..."
+                                   class="datepicker w-full rounded-2xl border border-gray-700 bg-gray-950 px-4 py-3 text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer">
                             <p class="mt-2 text-xs text-gray-500">Để trống nếu muốn đăng ngay.</p>
                         </div>
                     </div>
@@ -101,17 +103,13 @@
 
                                 <div id="thumbnailPreviewState" class="w-full {{ old('thumbnail') ? '' : 'hidden' }}">
                                     <img id="thumbnailPreview" src="{{ old('thumbnail') }}" alt="Thumbnail preview" class="h-56 w-full rounded-[1.25rem] object-cover">
-                                    <div class="mt-4 rounded-2xl border border-gray-800 bg-black/40 p-3 text-left">
-                                        <div class="text-xs uppercase tracking-[0.22em] text-gray-500">Cloudinary URL</div>
-                                        <div id="thumbnailUrlLabel" class="mt-2 break-all text-sm text-gray-300">{{ old('thumbnail') }}</div>
-                                    </div>
                                     <button type="button" id="removeThumbnailButton" class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20">
                                         <i class="fa-solid fa-trash-can"></i>
                                         Gỡ thumbnail
                                     </button>
                                 </div>
                             </div>
-                            <div class="mt-3">
+                            <div class="hidden">
                                 <label for="thumbnailUrlField" class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-gray-500">URL sẽ lưu vào DB</label>
                                 <input id="thumbnailUrlField" type="text" value="{{ old('thumbnail') }}" readonly class="w-full rounded-2xl border border-gray-800 bg-gray-950 px-4 py-3 text-sm text-gray-300 placeholder:text-gray-600 focus:outline-none">
                             </div>
@@ -238,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const emptyState = document.getElementById('thumbnailEmptyState');
     const previewState = document.getElementById('thumbnailPreviewState');
     const previewImage = document.getElementById('thumbnailPreview');
-    const urlLabel = document.getElementById('thumbnailUrlLabel');
     const statusLabel = document.getElementById('thumbnailUploadStatus');
     const thumbnailUrlField = document.getElementById('thumbnailUrlField');
     const removeButton = document.getElementById('removeThumbnailButton');
@@ -278,12 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (url) {
             previewImage.src = url;
-            urlLabel.textContent = url;
             emptyState.classList.add('hidden');
             previewState.classList.remove('hidden');
         } else {
             previewImage.src = '';
-            urlLabel.textContent = '';
             previewState.classList.add('hidden');
             emptyState.classList.remove('hidden');
         }

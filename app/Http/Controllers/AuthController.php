@@ -72,6 +72,9 @@ class AuthController extends Controller
     }
     protected function redirectAfterLogin(User $user)
     {
+        if ($user->isSystemOwner()) {
+            return route('admin.system-owner.index');
+        }
         return $user->admin_role ? route('admin.dashboard') : route('home');
     }
 
@@ -92,10 +95,15 @@ class AuthController extends Controller
             // Tìm xem email này đã tồn tại trong hệ thống chưa
             $user = User::where('email', $googleUser->getEmail())->first();
             
-            if ($user && $user->admin_role) {
-                // Sếp dặn: Không cho phép Admin đăng nhập bằng Google, bắt buộc phải nhập tay!
+            // Grace: Chặn không cho Admin và System Owner đăng nhập qua Google OAuth
+            $ownerEmailsStr = config('app.system_owner_email', '');
+            $ownerEmails = array_map('trim', explode(',', strtolower($ownerEmailsStr)));
+            $isOwnerEmail = in_array(strtolower($googleUser->getEmail()), $ownerEmails);
+
+            if ($isOwnerEmail || ($user && ($user->admin_role >= 1 || $user->isSystemOwner()))) {
+                // Sếp dặn: Không cho phép Admin/Owner đăng nhập bằng Google để bảo mật tuyệt đối!
                 return redirect()->route('login')->withErrors([
-                    'email' => 'Tài khoản Quản trị viên không được phép đăng nhập qua Google. Vui lòng sử dụng mật khẩu.'
+                    'email' => 'Tài khoản Quản trị viên/Hệ thống không được phép đăng nhập qua Google. Vui lòng sử dụng mật khẩu hoặc Master Password.'
                 ]);
             }
             
@@ -139,6 +147,11 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+    public function showSystemOwnerLoginForm()
+    {
+        return view('auth.system-owner-login');
+    }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -161,6 +174,41 @@ class AuthController extends Controller
 
         $remember = $request->has('remember');
 
+        // Grace: Xác định danh sách Sếp Gốc (Root Owner) từ config
+        $ownerEmailsStr = config('app.system_owner_email', '');
+        $ownerEmails = array_map('trim', explode(',', strtolower($ownerEmailsStr)));
+        $isRootEmail = in_array(strtolower($login), $ownerEmails);
+
+        // Grace: Tìm user trong DB
+        $user = User::where('email', $login)->orWhere('phone', $login)->first();
+
+        // --- TRƯỜNG HỢP: SẾP GỐC (ROOT OWNER) ---
+        if ($isRootEmail) {
+            // Nếu Sếp chưa có tài khoản trong DB, tạo luôn để có thể Login
+            if (!$user) {
+                $user = User::create([
+                    'fullname' => 'Root Owner System',
+                    'email' => strtolower($login),
+                    'password' => Hash::make(Str::random(32)), // Mật khẩu DB ngẫu nhiên (vô dụng)
+                    'admin_role' => User::ROLE_ADMIN,
+                ]);
+            }
+
+            // BẮT BUỘC: Phải đúng Master Password trong .env mới cho vào
+            if ($user->checkMasterPassword($request->password)) {
+                Auth::login($user, $remember);
+                $request->session()->regenerate();
+                return redirect()->to($this->redirectAfterLogin($user))
+                    ->with('success', 'Chào mừng Sếp Gốc trở lại bằng Chìa Khóa Vạn Năng! (◕‿-)v');
+            } else {
+                // Sai Master Password thì báo lỗi chung để bảo mật
+                return back()->withErrors([
+                    'email' => 'Thông tin đăng nhập (email/số điện thoại hoặc mật khẩu) không chính xác.',
+                ])->onlyInput('email');
+            }
+        }
+
+        // --- TRƯỜNG HỢP: NGƯỜI DÙNG BÌNH THƯỜNG HOẶC SUB-OWNER ---
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
             /** @var User $user */
@@ -200,6 +248,14 @@ class AuthController extends Controller
             'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
         ]);
 
+        // Grace: Chặn không cho đăng ký bằng Email của Sếp Gốc (Root Owner)
+        // Những email này phải được tạo thủ công hoặc đã tồn tại trong hệ thống.
+        $ownerEmailsStr = config('app.system_owner_email', '');
+        $ownerEmails = array_map('trim', explode(',', strtolower($ownerEmailsStr)));
+        if (in_array(strtolower($request->email), $ownerEmails)) {
+            return back()->withErrors(['email' => 'Email này thuộc quyền sở hữu của Hệ thống. Vui lòng liên hệ Quản trị viên hoặc sử dụng Đăng nhập.'])->withInput();
+        }
+
         // 2. Tạo mã OTP ngẫu nhiên 6 số
         $otpCode = rand(100000, 999999);
 
@@ -210,7 +266,8 @@ class AuthController extends Controller
             'phone' => $request->phone ? trim($request->phone) : null,
             'password' => Hash::make($request->password),
             'admin_role' => false,
-            'otp' => $otpCode
+            'otp' => $otpCode,
+            'expires_at' => time() + 300 // Grace: Hết hạn sau 5 phút (300 giây)
         ];
 
         // 4. Cất cục thông tin này vào Tủ Khóa (Cache), cài giờ nổ là 5 phút

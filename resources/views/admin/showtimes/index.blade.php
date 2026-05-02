@@ -18,10 +18,17 @@
                 <p class="mt-1 text-sm text-gray-400">Lập lịch và xem toàn bộ suất chiếu theo ngày, phòng, rạp.</p>
             </div>
         </div>
-        <a href="{{ route('admin.showtimes.create') }}"
-           class="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-900/30 transition hover:bg-violet-700">
-            <i class="fa-solid fa-plus"></i> Thêm Suất Chiếu
-        </a>
+        @if(auth()->user()->isSystemOwner())
+            <a href="{{ route('admin.showtimes.create') }}"
+               class="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-900/30 transition hover:bg-violet-700">
+                <i class="fa-solid fa-plus"></i> Thêm Suất Chiếu
+            </a>
+        @else
+            <button class="inline-flex items-center justify-center gap-2 rounded-xl bg-gray-800 px-5 py-2.5 text-sm font-bold text-gray-400 border border-gray-700 cursor-not-allowed">
+                <i class="fa-solid fa-chart-line"></i>
+                Chế độ Theo dõi
+            </button>
+        @endif
     </div>
 
     {{-- Flash --}}
@@ -53,8 +60,9 @@
                 </option>
             @endforeach
         </select>
-        <input type="date" name="date" value="{{ $filters['date'] ?? '' }}"
-               class="rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none">
+        <input type="text" name="date" value="{{ $filters['date'] ?? '' }}"
+               placeholder="Chọn ngày lọc..."
+               class="past-date-picker rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-violet-500 focus:outline-none cursor-pointer">
         <button type="submit"
                 class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-violet-700">
             <i class="fa-solid fa-filter"></i> Lọc
@@ -107,23 +115,29 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-right border-l border-gray-800/50">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.showtimes.edit', $st) }}"
-                                       class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400 transition hover:bg-violet-500/20"
-                                       title="Sửa">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <form action="{{ route('admin.showtimes.destroy', $st) }}" method="POST"
-                                          onsubmit="return confirm('Xóa suất chiếu này?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
-                                                title="Xóa">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                @if(auth()->user()->isSystemOwner())
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.showtimes.edit', $st) }}"
+                                           class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-500/10 text-violet-400 transition hover:bg-violet-500/20"
+                                           title="Sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <form action="{{ route('admin.showtimes.destroy', $st) }}" method="POST"
+                                              onsubmit="return confirm('Xóa suất chiếu này?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                                                    title="Xóa">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="text-[10px] font-bold text-violet-500 uppercase tracking-widest bg-violet-500/5 px-3 py-1.5 rounded-lg border border-violet-500/20">
+                                        <i class="fa-solid fa-lock mr-1"></i> Read Only
+                                    </span>
+                                @endif
                             </td>
                         </tr>
                     @empty

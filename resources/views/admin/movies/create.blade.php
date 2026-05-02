@@ -64,7 +64,9 @@
             <!-- Ngày chiếu -->
             <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-300">Ngày Khởi Chiếu</label>
-                <input type="date" name="release_date" value="{{ old('release_date') }}" class="w-full rounded-xl border border-gray-700 bg-black/50 px-4 py-3 text-white placeholder-gray-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 shadow-inner [color-scheme:dark]">
+                <input type="text" name="release_date" value="{{ old('release_date') }}" 
+                       placeholder="Chọn ngày công chiếu..."
+                       class="past-date-picker w-full rounded-xl border border-gray-700 bg-black/50 px-4 py-3 text-white placeholder-gray-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 shadow-inner cursor-pointer">
             </div>
 
             <!-- Diễn viên -->

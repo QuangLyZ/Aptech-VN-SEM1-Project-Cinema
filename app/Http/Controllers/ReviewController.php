@@ -35,6 +35,20 @@ class ReviewController extends Controller
             'comment' => 'nullable|string|max:500',
         ]);
 
+        // Kiểm tra xem user đã mua vé xem phim này chưa
+        $hasBoughtTicket = \App\Models\Ticket::where('user_id', Auth::id())
+            ->whereHas('showtime', function($query) use ($movie) {
+                $query->where('movie_id', $movie->id);
+            })
+            ->where('status', 'paid') // Chỉ chấp nhận vé đã thanh toán
+            ->exists();
+
+        if (!$hasBoughtTicket) {
+            return response()->json([
+                'message' => 'Sếp ơi, sếp cần phải trải nghiệm bộ phim này (mua vé) thì mới có thể để lại đánh giá chân thực được ạ! (◕‿◕✿)'
+            ], 403);
+        }
+
         // Kiểm tra xem user đã đánh giá phim này chưa
         $existingReview = Review::where('user_id', Auth::id())
             ->where('movie_id', $movie->id)

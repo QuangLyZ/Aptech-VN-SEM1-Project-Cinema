@@ -583,9 +583,9 @@ class BookingController extends Controller
 
     private function createVnpayUrl(int $amount, int $ticketId): string
     {
-        $vnpUrl = env('VNP_URL');
-        $vnpTmnCode = env('VNP_TMN_CODE');
-        $vnpHashSecret = env('VNP_HASH_SECRET');
+        $vnpUrl = config('services.vnpay.vnp_url');
+        $vnpTmnCode = config('services.vnpay.vnp_tmn_code');
+        $vnpHashSecret = config('services.vnpay.vnp_hash_secret');
 
         $inputData = [
             'vnp_Version' => '2.1.0',
@@ -598,7 +598,7 @@ class BookingController extends Controller
             'vnp_Locale' => 'vn',
             'vnp_OrderInfo' => 'Thanh toan ve xem phim APC-TICKET',
             'vnp_OrderType' => 'billpayment',
-            'vnp_ReturnUrl' => env('VNP_RETURN_URL'),
+            'vnp_ReturnUrl' => config('services.vnpay.vnp_return_url'),
             'vnp_TxnRef' => $ticketId,
         ];
 
@@ -684,7 +684,7 @@ class BookingController extends Controller
         }
 
         try {
-            Mail::to($ticket->email)->send(new BookingTicketMail($ticket));
+            Mail::to($ticket->email)->queue(new BookingTicketMail($ticket));
 
             DB::table('tickets')
                 ->where('id', $ticketId)

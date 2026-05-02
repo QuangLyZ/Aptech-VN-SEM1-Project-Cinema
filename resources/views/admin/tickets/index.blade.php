@@ -42,8 +42,9 @@
                    placeholder="Tìm tên, email, SĐT..."
                    class="w-full rounded-xl border border-gray-700 bg-black/40 py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
         </div>
-        <input type="date" name="date" value="{{ $filters['date'] ?? '' }}"
-               class="rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-amber-500 focus:outline-none">
+        <input type="text" name="date" value="{{ $filters['date'] ?? '' }}"
+               placeholder="Chọn ngày lọc..."
+               class="past-date-picker rounded-xl border border-gray-700 bg-black/40 px-4 py-2.5 text-sm text-white focus:border-amber-500 focus:outline-none cursor-pointer">
         <button type="submit"
                 class="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-amber-700">
             <i class="fa-solid fa-filter"></i> Lọc
@@ -115,16 +116,18 @@
                                        title="Xem chi tiết">
                                         <i class="fa-solid fa-eye"></i>
                                     </a>
-                                    <form action="{{ route('admin.tickets.destroy', $ticket) }}" method="POST"
-                                          onsubmit="return confirm('Xóa vé #{{ $ticket->id }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
-                                                title="Xóa vé">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </form>
+                                    @if(auth()->user()->isSystemOwner())
+                                        <form action="{{ route('admin.tickets.destroy', $ticket) }}" method="POST"
+                                              onsubmit="return confirm('Xóa vé #{{ $ticket->id }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500/20"
+                                                    title="Xóa vé">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

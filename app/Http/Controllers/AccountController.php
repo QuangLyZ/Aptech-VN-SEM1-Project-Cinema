@@ -30,7 +30,9 @@ class AccountController extends Controller
         ];
 
         try {
-            $tickets = $this->loadTickets($user->id);
+            // Load tickets belonging to the user. Also include tickets created as guest
+            // where the saved email or phone matches the current user's email/phone.
+            $tickets = $this->loadTickets($user);
             $availableVouchers = $this->loadAvailableVouchers();
             $voucherUsages = $this->loadVoucherUsages($user->id);
 
@@ -53,7 +55,13 @@ class AccountController extends Controller
         ]);
     }
 
-    protected function loadTickets(int $userId): Collection
+    /**
+     * Load tickets for a user. Includes tickets where tickets.user_id == $user->id
+     * or where the ticket email/phone matches the user's email/phone (guest bookings).
+     *
+     * @param  mixed  $user  Authenticated user model
+     */
+    protected function loadTickets($user): Collection
     {
         $tickets = DB::table('tickets')
             ->leftJoin('showtimes', 'showtimes.id', '=', 'tickets.showtime_id')
@@ -61,7 +69,17 @@ class AccountController extends Controller
             ->leftJoin('rooms', 'rooms.id', '=', 'showtimes.room_id')
             ->leftJoin('cinemas', 'cinemas.id', '=', 'rooms.cinema_id')
             ->leftJoin('voucher_usages', 'voucher_usages.ticket_id', '=', 'tickets.id')
-            ->where('tickets.user_id', $userId)
+            ->where(function ($query) use ($user) {
+                $query->where('tickets.user_id', $user->id);
+
+                if (!empty($user->email)) {
+                    $query->orWhere('tickets.email', $user->email);
+                }
+
+                if (!empty($user->phone)) {
+                    $query->orWhere('tickets.phone', $user->phone);
+                }
+            })
             ->orderByDesc('tickets.booking_date')
             ->select([
                 'tickets.id',

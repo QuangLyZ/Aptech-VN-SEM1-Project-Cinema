@@ -67,6 +67,7 @@
                         <th class="px-6 py-4 font-semibold tracking-wider">Khách hàng</th>
                         <th class="px-6 py-4 font-semibold tracking-wider">Phim / Suất</th>
                         <th class="px-6 py-4 font-semibold tracking-wider">Rạp</th>
+                        <th class="px-6 py-4 font-semibold tracking-wider">Ghế</th>
                         <th class="px-6 py-4 font-semibold tracking-wider text-right">Tổng tiền</th>
                         <th class="px-6 py-4 font-semibold tracking-wider">Ngày đặt</th>
                         <th class="px-6 py-4 font-semibold tracking-wider text-right">Thao tác</th>
@@ -75,9 +76,7 @@
                 <tbody class="divide-y divide-gray-800">
                     @forelse ($tickets as $ticket)
                         <tr class="transition-colors hover:bg-gray-800/50">
-                            <td class="px-6 py-4 text-gray-500 font-mono text-xs">
-                                {{ $ticket->ticket_code ?: ('CB-' . str_pad((string) $ticket->id, 8, '0', STR_PAD_LEFT)) }}
-                            </td>
+                            <td class="px-6 py-4 text-gray-400 text-sm">{{ $tickets->firstItem() + $loop->index }}</td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-white">
                                     {{ $ticket->fullname ?? ($ticket->user?->name ?? 'Guest') }}
@@ -108,6 +107,12 @@
                             <td class="px-6 py-4">
                                 <div class="text-gray-300">{{ $ticket->showtime?->room?->cinema?->name ?? '—' }}</div>
                                 <div class="mt-0.5 text-xs text-gray-500">{{ $ticket->showtime?->room?->name ?? '' }}</div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-300">
+                                @php
+                                    $seatNames = $ticket->details->pluck('seat')->filter()->map(fn($s) => $s->seat_name)->values()->all();
+                                @endphp
+                                {{ empty($seatNames) ? '—' : implode(', ', $seatNames) }}
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <span class="font-bold text-amber-400">

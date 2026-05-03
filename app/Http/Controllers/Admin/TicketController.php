@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Ticket::with(['user', 'showtime.movie', 'showtime.room.cinema'])->latest();
+    // Eager-load details->seat so the index can display reserved seat names
+    $query = Ticket::with(['user', 'showtime.movie', 'showtime.room.cinema', 'details.seat'])->latest();
 
         if ($request->filled('q')) {
             $q = $request->q;
@@ -114,7 +116,23 @@ class TicketController extends Controller
     public function destroy(string $id)
     {
         $ticket = Ticket::findOrFail($id);
-        $ticket->delete();
+
+        // Use a DB transaction to delete related rows first to avoid FK constraint errors,
+        // then delete the ticket itself.
+        DB::transaction(function () use ($ticket) {
+            // Remove ticket details (seat rows)
+            DB::table('ticket_details')->where('ticket_id', $ticket->id)->delete();
+
+            // Remove voucher usages linked to this ticket
+            DB::table('voucher_usages')->where('ticket_id', $ticket->id)->delete();
+
+            // Remove payment logs associated with the ticket (if any)
+            DB::table('payment_logs')->where('ticket_id', $ticket->id)->delete();
+
+            // Finally remove the ticket
+            $ticket->delete();
+        });
+
         return redirect()->route('admin.tickets.index')
             ->with('success', 'Đã xóa vé thành công!');
     }

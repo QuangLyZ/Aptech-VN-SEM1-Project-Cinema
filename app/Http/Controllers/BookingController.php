@@ -72,6 +72,15 @@ class BookingController extends Controller
                 ->pluck('seats.seat_name')
                 ->all();
 
+            // Normalize seat names (trim + uppercase) to avoid format mismatches
+            $takenSeatNames = array_map(fn($s) => strtoupper(trim((string) $s)), $takenSeatNames);
+
+            // Log taken seats for debugging when booking page is rendered
+            Log::info('BookingController@show - taken seats', [
+                'showtime_id' => $showtimeId,
+                'taken_seat_names' => $takenSeatNames,
+            ]);
+
             if ($request->user()) {
                 $availableVouchers = $this->loadAvailableVouchers();
                 

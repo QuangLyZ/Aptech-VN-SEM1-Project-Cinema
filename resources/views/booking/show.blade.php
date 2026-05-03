@@ -246,7 +246,8 @@
 
         const bookingConfig = {
             seatPrice: @json($seatPrice),
-            checkoutUrl: @json(route('booking.checkout', $showtime->id ?? 0)),
+            // use a relative URL to ensure fetch uses the current origin (avoids mismatched host:port)
+            checkoutUrl: @json(route('booking.checkout', $showtime->id ?? 0, false)),
             accountUrl: @json(route('account.index', ['tab' => 'tickets'])),
             loginUrl: @json(route('login')),
             csrf: @json(csrf_token()),

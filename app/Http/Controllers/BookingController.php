@@ -121,37 +121,10 @@ class BookingController extends Controller
 
     public function checkout(Request $request, int $showtimeId): JsonResponse
     {
-        if (!$request->user()) {
-            $this->recordPaymentLog([
-                'user_id' => null,
-                'ticket_id' => null,
-                'showtime_id' => $showtimeId,
-                'payment_method' => (string) $request->input('payment_method', 'unknown'),
-                'status' => 'failed',
-                'attempted_at' => now(),
-                'amount' => 0,
-                'discount_amount' => 0,
-                'final_amount' => 0,
-                'seat_count' => count((array) $request->input('seat_names', [])),
-                'voucher_code' => $request->input('voucher_code'),
-                'customer_email' => $request->input('email'),
-                'customer_phone' => $request->input('phone'),
-                'error_message' => 'Nguoi dung chua dang nhap.',
-                'metadata' => [
-                    'seat_names' => (array) $request->input('seat_names', []),
-                ],
-            ]);
-
-            return response()->json([
-                'message' => 'Bạn cần đăng nhập để hoàn tất thanh toán và lưu lịch sử vé',
-                'login_url' => route('login'),
-            ], 401);
-        }
-
         try {
             $data = $request->validate([
-                'fullname' => ['required', 'string', 'min:3', 'max:255'],
-                'email' => ['required', 'email', 'max:255'],
+                'fullname' => [$request->user() ? 'required' : 'nullable', 'string', 'min:3', 'max:255'],
+                'email' => [$request->user() ? 'required' : 'nullable', 'email', 'max:255'],
                 'phone' => ['required', 'string', 'max:20'],
                 'payment_method' => ['required', 'in:vnpay,paypal'],
                 'seat_names' => ['required', 'array', 'min:1'],
@@ -162,6 +135,11 @@ class BookingController extends Controller
             ]);
 
             $result = DB::transaction(function () use ($request, $showtimeId, $data) {
+                $bookingUser = $request->user() ?: $this->findUserByPhone($data['phone']);
+                $bookingUserId = $bookingUser?->id;
+                $customerName = $data['fullname'] ?? $bookingUser?->fullname ?? $bookingUser?->name ?? 'Khách vãng lai';
+                $customerEmail = $data['email'] ?? $bookingUser?->email;
+
                 $showtime = DB::table('showtimes')
                     ->select('id', 'room_id', 'movie_id')
                     ->where('id', $showtimeId)
@@ -186,21 +164,23 @@ class BookingController extends Controller
                 }
 
                 // Check if user already has 5 seats for this movie in this cinema
-                $existingTicketsCount = DB::table('ticket_details')
-                    ->join('tickets', 'tickets.id', '=', 'ticket_details.ticket_id')
-                    ->join('showtimes', 'showtimes.id', '=', 'tickets.showtime_id')
-                    ->join('rooms', 'rooms.id', '=', 'showtimes.room_id')
-                    ->where('tickets.user_id', $request->user()->id)
-                    ->where('showtimes.movie_id', $showtime->movie_id)
-                    ->where('rooms.cinema_id', $cinema->cinema_id)
-                    ->where('tickets.status', 'paid')
-                    ->count();
+                if ($bookingUserId) {
+                    $existingTicketsCount = DB::table('ticket_details')
+                        ->join('tickets', 'tickets.id', '=', 'ticket_details.ticket_id')
+                        ->join('showtimes', 'showtimes.id', '=', 'tickets.showtime_id')
+                        ->join('rooms', 'rooms.id', '=', 'showtimes.room_id')
+                        ->where('tickets.user_id', $bookingUserId)
+                        ->where('showtimes.movie_id', $showtime->movie_id)
+                        ->where('rooms.cinema_id', $cinema->cinema_id)
+                        ->where('tickets.status', 'paid')
+                        ->count();
 
-                $newSeatsCount = count($data['seat_names']);
-                if ($existingTicketsCount + $newSeatsCount > 5) {
-                    throw ValidationException::withMessages([
-                        'seat_names' => 'Tài khoản của bạn đã đặt ' . $existingTicketsCount . ' vé cho bộ phim này tại rạp này. Bạn chỉ được đặt tối đa 5 vé cho 1 bộ phim trong 1 cụm rạp. Nếu muốn đặt thêm vui lòng liên hệ admin.',
-                    ]);
+                    $newSeatsCount = count($data['seat_names']);
+                    if ($existingTicketsCount + $newSeatsCount > 5) {
+                        throw ValidationException::withMessages([
+                            'seat_names' => 'Tài khoản hoặc số điện thoại này đã đặt ' . $existingTicketsCount . ' vé cho bộ phim này tại rạp này. Bạn chỉ được đặt tối đa 5 vé cho 1 bộ phim trong 1 cụm rạp. Nếu muốn đặt thêm vui lòng liên hệ admin.',
+                        ]);
+                    }
                 }
 
                 $seatNames = collect($data['seat_names'])
@@ -264,10 +244,10 @@ class BookingController extends Controller
                 $ticketCode = $this->generateUniqueTicketCode();
 
                 $ticketId = DB::table('tickets')->insertGetId([
-                    'user_id' => $request->user()->id,
+                    'user_id' => $bookingUserId,
                     'showtime_id' => $showtimeId,
-                    'fullname' => $data['fullname'],
-                    'email' => $data['email'],
+                    'fullname' => $customerName,
+                    'email' => $customerEmail,
                     'phone' => $data['phone'],
                     'booking_date' => now(),
                     'total_price' => $baseTotal,
@@ -292,9 +272,15 @@ class BookingController extends Controller
                 DB::table('ticket_details')->insert($seatRows);
 
                 if ($voucher) {
+                    if (! $bookingUserId) {
+                        throw ValidationException::withMessages([
+                            'voucher_code' => 'Khách chưa có tài khoản không thể dùng voucher.',
+                        ]);
+                    }
+
                     DB::table('voucher_usages')->insert([
                         'voucher_id' => $voucher->id,
-                        'user_id' => $request->user()->id,
+                        'user_id' => $bookingUserId,
                         'ticket_id' => $ticketId,
                         'voucher_code' => $voucher->code,
                         'discount_amount' => $discountAmount,
@@ -319,16 +305,18 @@ class BookingController extends Controller
                     'total_price' => $baseTotal,
                     'seat_names' => $seatNames->all(),
                     'payment_method' => $data['payment_method'],
-                    'email' => $data['email'],
+                    'email' => $customerEmail,
                     'phone' => $data['phone'],
                     'reference_code' => $referenceCode,
                     'ticket_code' => $ticketCode,
-                    'fullname' => $data['fullname'],
+                    'fullname' => $customerName,
+                    'user_id' => $bookingUserId,
+                    'is_guest' => ! $bookingUserId,
                 ];
             });
 
             $this->recordPaymentLog([
-                'user_id' => $request->user()->id,
+                'user_id' => $result['user_id'],
                 'ticket_id' => $result['ticket_id'],
                 'showtime_id' => $showtimeId,
                 'payment_method' => $result['payment_method'],
@@ -349,12 +337,14 @@ class BookingController extends Controller
             ]);
 
             if ($data['payment_method'] === 'vnpay') {
-                $request->user()->notify(new BookingStatusNotification(
-                    'pending',
-                    'Đặt vé thành công',
-                    'Đặt chỗ đã được ghi nhận. Vui lòng hoàn tất thanh toán VNPay để xác nhận vé.',
-                    route('account.index', ['tab' => 'tickets'])
-                ));
+                if ($request->user()) {
+                    $request->user()->notify(new BookingStatusNotification(
+                        'pending',
+                        'Đặt vé thành công',
+                        'Đặt chỗ đã được ghi nhận. Vui lòng hoàn tất thanh toán VNPay để xác nhận vé.',
+                        route('account.index', ['tab' => 'tickets'])
+                    ));
+                }
 
                 $paymentUrl = $this->createVnpayUrl($result['final_price'], $result['ticket_id']);
 
@@ -363,14 +353,16 @@ class BookingController extends Controller
 
             $emailDelivered = $this->sendTicketConfirmationEmail($result['ticket_id'], $data['payment_method']);
 
-            $request->user()->notify(new BookingStatusNotification(
-                'success',
-                'Đặt vé thành công',
-                $emailDelivered
-                ? 'Thanh toán thành công. Vé đã được gửi tới email của bạn.'
-                : 'Thanh toán thành công. Vé đã được lưu trong tài khoản của bạn.',
-                route('account.index', ['tab' => 'tickets'])
-            ));
+            if ($request->user()) {
+                $request->user()->notify(new BookingStatusNotification(
+                    'success',
+                    'Đặt vé thành công',
+                    $emailDelivered
+                    ? 'Thanh toán thành công. Vé đã được gửi tới email của bạn.'
+                    : 'Thanh toán thành công. Vé đã được lưu trong tài khoản của bạn.',
+                    route('account.index', ['tab' => 'tickets'])
+                ));
+            }
 
             DB::table('tickets')->where('id', $result['ticket_id'])->update([
                 'status' => 'paid',
@@ -380,8 +372,8 @@ class BookingController extends Controller
             return response()->json([
                 'message' => $emailDelivered
                     ? 'Thanh toán thành công. Vé đã được gửi tới email nhận vé của bạn.'
-                    : 'Thanh toán thành công. Vé đã được lưu vào tài khoản của bạn.',
-                'redirect_url' => route('account.index', ['tab' => 'tickets']),
+                    : ($result['is_guest'] ? 'Thanh toán thành công. Admin có thể tra giao dịch bằng số điện thoại của bạn.' : 'Thanh toán thành công. Vé đã được lưu vào tài khoản của bạn.'),
+                'redirect_url' => $request->user() ? route('account.index', ['tab' => 'tickets']) : route('home'),
                 'ticket' => $result,
                 'ticket_email' => $result['email'],
                 'email_sent' => $emailDelivered,
@@ -528,6 +520,31 @@ class BookingController extends Controller
         return min((int) $voucher->discount_value, $baseTotal);
     }
 
+    protected function findUserByPhone(?string $phone): ?User
+    {
+        $phone = preg_replace('/\s+/', '', trim((string) $phone));
+
+        if ($phone === '') {
+            return null;
+        }
+
+        $variants = [$phone];
+
+        if (str_starts_with($phone, '+84')) {
+            $variants[] = '0' . substr($phone, 3);
+        } elseif (str_starts_with($phone, '84')) {
+            $variants[] = '0' . substr($phone, 2);
+            $variants[] = '+' . $phone;
+        } elseif (str_starts_with($phone, '0')) {
+            $variants[] = '+84' . substr($phone, 1);
+            $variants[] = '84' . substr($phone, 1);
+        }
+
+        return User::query()
+            ->whereIn('phone', array_values(array_unique($variants)))
+            ->first();
+    }
+
     protected function buildSeatMap(Collection $seats): Collection
     {
         if ($seats->isEmpty()) {
@@ -649,7 +666,10 @@ class BookingController extends Controller
                 ? 'Thanh toán thành công! Vé đã được gửi tới ' . $ticketEmail . '.'
                 : 'Thanh toán thành công';
 
-            return redirect()->route('account.index', ['tab' => 'tickets'])->with('payment_success', $successMessage);
+            $redirectRoute = $ticket && $ticket->user_id ? 'account.index' : 'home';
+            $redirectParams = $ticket && $ticket->user_id ? ['tab' => 'tickets'] : [];
+
+            return redirect()->route($redirectRoute, $redirectParams)->with('payment_success', $successMessage);
         }
 
         $showtimeId = DB::table('tickets')->where('id', $ticketId)->value('showtime_id');
@@ -668,7 +688,7 @@ class BookingController extends Controller
             return redirect()->route('booking.show', ['id' => $showtimeId])->with('payment_error', 'Thanh toán thất bại!');
         }
 
-        return redirect()->route('account.index', ['tab' => 'tickets'])->with('payment_error', 'Thanh toán thất bại');
+        return redirect()->route($ticket && $ticket->user_id ? 'account.index' : 'home', $ticket && $ticket->user_id ? ['tab' => 'tickets'] : [])->with('payment_error', 'Thanh toán thất bại');
     }
 
     protected function sendTicketConfirmationEmail(int $ticketId, string $paymentMethod): bool

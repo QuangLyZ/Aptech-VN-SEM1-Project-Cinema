@@ -19,11 +19,11 @@
 
 <div class="space-y-8 animate-[fadeIn_0.5s_ease-in-out]">
     <div class="flex items-center gap-4">
-        <a href="{{ route('admin.management') }}" class="text-white transition hover:text-gray-300">
+        <a href="{{ route('admin.management') }}" class="admin-back-link">
             <i class="fa-solid fa-chevron-left text-2xl"></i>
         </a>
         <div>
-            <h2 class="text-2xl font-extrabold tracking-tight text-white">Danh sách Bài Viết</h2>
+            <h2 class="admin-page-title font-extrabold tracking-tight text-white">Danh sách Bài Viết</h2>
             <p class="mt-1 text-sm text-gray-400">Xem và quản lý các bài viết đã được đăng lên hệ thống.</p>
         </div>
     </div>
@@ -112,7 +112,7 @@
                                 <label for="thumbnailUrlField" class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-gray-500">URL sẽ lưu vào DB</label>
                                 <input id="thumbnailUrlField" type="text" value="{{ old('thumbnail', $post->thumbnail) }}" readonly class="w-full rounded-2xl border border-gray-800 bg-gray-950 px-4 py-3 text-sm text-gray-300 placeholder:text-gray-600 focus:outline-none">
                             </div>
-                            <div id="thumbnailUploadStatus" class="mt-3 text-sm text-gray-400"></div>
+                            <div id="thumbnailUploadStatus" class="hidden"></div>
                         </div>
                     </div>
                 </div>
@@ -161,9 +161,7 @@
                                         </td>
                                         <td class="px-4 py-4">
                                             @if ($post->thumbnail)
-                                                <a href="{{ $post->thumbnail }}" target="_blank" rel="noopener noreferrer" class="text-red-400 hover:text-red-300">
-                                                    Xem ảnh
-                                                </a>
+                                                <img src="{{ $post->thumbnail }}" alt="{{ $post->title }}" class="h-12 w-20 rounded-lg object-cover">
                                             @else
                                                 <span class="text-gray-500">Không có</span>
                                             @endif
@@ -329,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         isUploadingThumbnail = true;
         syncSubmitState();
-        setStatus('Đang tải ảnh lên Cloudinary...', 'loading');
+        setStatus('', 'loading');
 
         try {
             const response = await fetch(uploadUrl, {
@@ -350,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             setThumbnail(payload.url);
-            setStatus(payload.message || 'Tải thumbnail thành công.', 'success');
+            setStatus('', 'success');
         } catch (error) {
             setStatus(error.message || 'Không thể tải ảnh.', 'error');
         } finally {

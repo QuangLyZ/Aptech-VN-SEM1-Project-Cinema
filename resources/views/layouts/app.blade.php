@@ -35,33 +35,33 @@
 
     <nav class="bg-slate-900/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 w-full">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-24 items-center">
+            <div class="flex h-20 items-center justify-between gap-3 sm:h-24">
                 <!-- Left Side: Logo & Desktop Menu -->
-                <div class="flex items-center gap-8">
+                <div class="flex min-w-0 items-center gap-8">
                     <a href="/" class="flex items-center gap-2 group shrink-0">
                         <div class="bg-red-600 p-2 rounded-lg shadow-lg shadow-red-600/20 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-film text-white text-xl"></i>
                         </div>
-                        <span class="text-2xl font-black tracking-tighter text-white">Cine<span class="text-red-600">Book</span></span>
+                        <span class="text-xl font-black tracking-tighter text-white sm:text-2xl">Cine<span class="text-red-600">Book</span></span>
                     </a>
 
                     <!-- Desktop Menu: Chỉ hiện trên màn hình lớn (xl) để tránh chật chội -->
                     <div class="hidden xl:flex items-center space-x-8">
-                        <a href="/" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Trang Chủ</a>
-                        <a href="/movies" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Phim & Lịch Chiếu</a>
-                        <a href="{{ route('cinemas.index') }}" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Danh Sách Rạp</a>
-                        <a href="/feedback" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">Góp Ý & Hỗ Trợ</a>
+                        <a href="/" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">{{ __('ui.home') }}</a>
+                        <a href="/movies" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">{{ __('ui.movies_schedule') }}</a>
+                        <a href="{{ route('cinemas.index') }}" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">{{ __('ui.cinemas') }}</a>
+                        <a href="/feedback" class="text-gray-400 hover:text-white text-sm font-bold transition-colors">{{ __('ui.feedback') }}</a>
                     </div>
                 </div>
 
                 <!-- Right Side: Search & Auth & Hamburger -->
-                <div class="flex items-center gap-4 md:gap-6">
+                <div class="flex shrink-0 items-center gap-2 md:gap-4 lg:gap-6">
                     <!-- Search Bar: Ẩn trên mobile, hiện từ md -->
                     <div class="hidden md:block relative group">
                         <form action="{{ route('movies.index') }}" method="GET" class="relative">
-                            <input type="text" name="q" id="globalSearchInput" placeholder="Tìm kiếm phim, rạp..." 
-                                class="bg-white/5 border border-white/10 rounded-full pl-5 pr-12 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 w-48 lg:w-64 transition-all placeholder:text-gray-500 group-hover:bg-white/10">
-                            <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+                            <input type="text" name="q" id="globalSearchInput" placeholder="{{ __('ui.search_placeholder') }}" 
+                                class="h-11 bg-white/5 border border-white/10 rounded-full pl-5 pr-12 text-sm text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 w-44 lg:w-64 transition-all placeholder:text-gray-500 group-hover:bg-white/10">
+                            <button type="submit" class="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-full text-gray-500 transition-colors hover:text-white" aria-label="Tìm kiếm">
                                 <i class="fa-solid fa-search"></i>
                             </button>
                             <!-- Search Suggestions -->
@@ -69,11 +69,21 @@
                         </form>
                     </div>
 
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="hidden sm:flex items-center rounded-full border border-white/10 bg-white/5 p-1 text-xs font-bold">
+                            <a href="{{ route('language.switch', 'vi') }}" class="rounded-full px-2.5 py-1 {{ app()->getLocale() === 'vi' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white' }}">VI</a>
+                            <a href="{{ route('language.switch', 'en') }}" class="rounded-full px-2.5 py-1 {{ app()->getLocale() === 'en' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white' }}">EN</a>
+                        </div>
                         @guest
                             <div class="flex items-center gap-1 sm:gap-3">
-                                <a href="/login" class="text-gray-400 hover:text-white text-sm font-bold px-3 py-2 transition-colors">Đăng Nhập</a>
-                                <a href="/register" class="bg-red-600 hover:bg-red-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black shadow-lg shadow-red-600/20 transition-all active:scale-95">Đăng Ký</a>
+                                <a href="/login" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-gray-300 transition hover:text-white sm:w-auto sm:border-0 sm:bg-transparent sm:px-3 sm:text-sm sm:font-bold" aria-label="{{ __('ui.login') }}">
+                                    <i class="fa-solid fa-right-to-bracket sm:hidden"></i>
+                                    <span class="hidden sm:inline">{{ __('ui.login') }}</span>
+                                </a>
+                                <a href="/register" class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-red-600 text-white shadow-lg shadow-red-600/20 transition-all hover:bg-red-700 active:scale-95 sm:w-auto sm:px-6 sm:text-sm sm:font-black" aria-label="{{ __('ui.register') }}">
+                                    <i class="fa-solid fa-user-plus sm:hidden"></i>
+                                    <span class="hidden sm:inline">{{ __('ui.register') }}</span>
+                                </a>
                             </div>
                         @else
                             <!-- Notifications & User Dropdown (Original code kept but refined) -->
@@ -86,11 +96,11 @@
                                     </button>
                                     <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 max-h-[420px] overflow-hidden rounded-3xl border border-gray-800 bg-gray-900 shadow-2xl z-50">
                                         <div class="flex items-center justify-between border-b border-gray-800 px-4 py-3 text-sm text-gray-300">
-                                            <div class="font-semibold text-white">Thông báo</div>
-                                            <button id="notificationMarkAllRead" class="text-xs text-gray-400 hover:text-white">Đánh dấu đã đọc</button>
+                                            <div class="font-semibold text-white">{{ __('ui.notifications') }}</div>
+                                            <button id="notificationMarkAllRead" class="text-xs text-gray-400 hover:text-white">{{ __('ui.mark_all_read') }}</button>
                                         </div>
                                         <div id="notificationList" class="max-h-[340px] overflow-y-auto"></div>
-                                        <div id="notificationEmpty" class="hidden px-4 py-6 text-center text-sm text-gray-500">Chưa có thông báo mới.</div>
+                                        <div id="notificationEmpty" class="hidden px-4 py-6 text-center text-sm text-gray-500">{{ __('ui.no_new_notifications') }}</div>
                                     </div>
                                 </div>
 
@@ -106,28 +116,28 @@
                                     <div class="absolute top-[100%] right-0 h-4 w-full"></div>
                                     <div class="absolute right-0 top-[calc(100%+0.5rem)] w-56 origin-top-right rounded-2xl border border-gray-800 bg-gray-900/95 backdrop-blur-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 transform group-hover:translate-y-0 translate-y-2">
                                         <div class="p-2">
-                                            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Quản lý</div>
+                                            <div class="px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">{{ __('ui.management') }}</div>
                                             <a href="{{ route('account.index', ['tab' => 'profile']) }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-gear"></i></div> Cài đặt tài khoản
+                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-gear"></i></div> {{ __('ui.account_settings') }}
                                             </a>
                                             <a href="{{ route('account.index', ['tab' => 'tickets']) }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-white transition-colors">
-                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-ticket"></i></div> Vé của tôi
+                                                <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-ticket"></i></div> {{ __('ui.my_tickets') }}
                                             </a>
                                             @if(Auth::user()->isSystemOwner())
                                                 <a href="{{ route('admin.system-owner.index') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-black text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)] mb-2">
-                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20 text-red-500 animate-pulse"><i class="fa-solid fa-crown"></i></div> QUẢN TRỊ TỐI CAO
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/20 text-red-500 animate-pulse"><i class="fa-solid fa-crown"></i></div> {{ __('ui.supreme_admin') }}
                                                 </a>
                                             @endif
                                             @if(Auth::user()->admin_role)
                                                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-emerald-400 transition-colors">
-                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-chart-line"></i></div> Trang Quản trị
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-800 text-gray-400"><i class="fa-solid fa-chart-line"></i></div> {{ __('ui.admin') }}
                                                 </a>
                                             @endif
                                             <div class="my-1.5 border-t border-gray-800"></div>
                                             <form action="{{ route('logout') }}" method="POST" class="block m-0">
                                                 @csrf
                                                 <button type="submit" class="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
-                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/10"><i class="fa-solid fa-right-from-bracket"></i></div> Đăng xuất
+                                                    <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500/10"><i class="fa-solid fa-right-from-bracket"></i></div> {{ __('ui.logout') }}
                                                 </button>
                                             </form>
                                         </div>
@@ -158,27 +168,32 @@
                     </button>
                 </div>
 
+                <div class="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/5 p-1 text-center text-xs font-bold">
+                    <a href="{{ route('language.switch', 'vi') }}" class="rounded-xl px-3 py-2 {{ app()->getLocale() === 'vi' ? 'bg-red-600 text-white' : 'text-gray-400' }}">VI</a>
+                    <a href="{{ route('language.switch', 'en') }}" class="rounded-xl px-3 py-2 {{ app()->getLocale() === 'en' ? 'bg-red-600 text-white' : 'text-gray-400' }}">EN</a>
+                </div>
+
                 <nav class="flex flex-col gap-2">
                     <a href="/" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
-                        <i class="fa-solid fa-house w-5"></i> <span class="font-bold">Trang Chủ</span>
+                        <i class="fa-solid fa-house w-5"></i> <span class="font-bold">{{ __('ui.home') }}</span>
                     </a>
                     <a href="/movies" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
-                        <i class="fa-solid fa-film w-5"></i> <span class="font-bold">Phim & Lịch Chiếu</span>
+                        <i class="fa-solid fa-film w-5"></i> <span class="font-bold">{{ __('ui.movies_schedule') }}</span>
                     </a>
                     <a href="{{ route('cinemas.index') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
-                        <i class="fa-solid fa-location-dot w-5"></i> <span class="font-bold">Danh Sách Rạp</span>
+                        <i class="fa-solid fa-location-dot w-5"></i> <span class="font-bold">{{ __('ui.cinemas') }}</span>
                     </a>
                     <a href="/feedback" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition-all">
-                        <i class="fa-solid fa-headset w-5"></i> <span class="font-bold">Góp Ý & Hỗ Trợ</span>
+                        <i class="fa-solid fa-headset w-5"></i> <span class="font-bold">{{ __('ui.feedback') }}</span>
                     </a>
                 </nav>
 
                 <!-- Mobile Search -->
                 <div class="mt-8 pt-8 border-t border-white/5">
                     <form action="{{ route('movies.index') }}" method="GET" class="relative">
-                        <input type="text" name="q" placeholder="Tìm phim..." 
+                        <input type="text" name="q" placeholder="{{ __('ui.search_placeholder') }}" 
                             class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500">
-                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
+                        <button type="submit" class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-gray-500" aria-label="Tìm kiếm">
                             <i class="fa-solid fa-search"></i>
                         </button>
                     </form>
@@ -199,8 +214,8 @@
             class="bg-gray-900 border border-gray-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
                 <div>
-                    <h3 class="text-xl font-bold text-white" id="modalMovieName">Đánh giá phim</h3>
-                    <p class="text-sm text-gray-400">Chia sẻ cảm nhận của sếp về bộ phim này</p>
+                    <h3 class="text-xl font-bold text-white" id="modalMovieName">{{ __('ui.review_movie') }}</h3>
+                    <p class="text-sm text-gray-400">{{ __('ui.review_desc') }}</p>
                 </div>
                 <button onclick="closeReviewModal()" class="text-gray-400 hover:text-white transition-colors">
                     <i class="fa-solid fa-xmark text-xl"></i>
@@ -211,7 +226,7 @@
                     <form id="reviewForm" class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
                         <input type="hidden" id="modalMovieId">
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-400 mb-3">Sếp cho mấy sao?</label>
+                            <label class="block text-sm font-medium text-gray-400 mb-3">{{ __('ui.how_many_stars') }}</label>
                             <div class="flex space-x-3" id="starRating">
                                 @for ($i = 1; $i <= 5; $i++)
                                     <button type="button" onclick="setRating({{ $i }})"
@@ -223,42 +238,40 @@
                             <input type="hidden" id="ratingValue" name="rating" value="0">
                         </div>
                         <div class="mb-6">
-                            <label for="comment" class="block text-sm font-medium text-gray-400 mb-2">Lời bình của
-                                sếp</label>
+                            <label for="comment" class="block text-sm font-medium text-gray-400 mb-2">{{ __('ui.your_comment') }}</label>
                             <textarea id="comment" name="comment" rows="3"
                                 class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all"
-                                placeholder="Phim hay không sếp?"></textarea>
+                                placeholder="{{ __('ui.movie_good') }}"></textarea>
                         </div>
                         <div class="flex justify-end">
                             <button type="submit"
                                 class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-8 rounded-lg transition-all shadow-lg shadow-red-600/20 active:scale-95">
-                                GỬI ĐÁNH GIÁ
+                                {{ __('ui.submit_review') }}
                             </button>
                         </div>
                     </form>
                 @else
                     <div class="bg-gray-800/50 p-8 rounded-xl border border-dashed border-gray-700 text-center">
                         <i class="fa-solid fa-user-lock text-4xl text-gray-600 mb-4"></i>
-                        <p class="text-gray-300 mb-4">Sếp cần đăng nhập để viết đánh giá!</p>
+                        <p class="text-gray-300 mb-4">{{ __('ui.need_login_review') }}</p>
                         <a href="{{ route('login') }}"
-                            class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Đăng
-                            nhập ngay</a>
+                            class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">{{ __('ui.login_now') }}</a>
                     </div>
                 @endauth
                 <div>
                     <div class="flex items-center justify-between mb-6">
                         <h4 class="text-lg font-bold text-white flex items-center">
                             <i class="fa-solid fa-comments mr-2 text-red-500"></i>
-                            Đánh giá từ cộng đồng
+                            {{ __('ui.community_reviews') }}
                         </h4>
                         <div class="text-sm text-gray-400">
                             <span id="avgRatingText">0</span>/5 <i class="fa-solid fa-star text-yellow-500"></i> (<span
-                                id="countText">0</span> đánh giá)
+                                id="countText">0</span> {{ __('ui.reviews') }})
                         </div>
                     </div>
                     <div id="reviewsList" class="space-y-4">
                         <div class="text-center py-10 text-gray-500">
-                            <p>Đang tải đánh giá...</p>
+                            <p>{{ __('ui.loading_reviews') }}</p>
                         </div>
                     </div>
                 </div>
@@ -321,7 +334,7 @@
                     document.getElementById('avgRatingText').innerText = data.average_rating;
                     document.getElementById('countText').innerText = data.review_count;
                     if (data.reviews.length === 0) {
-                        list.innerHTML = `<div class="text-center py-10 text-gray-500 italic text-sm">Chưa có đánh giá nào.</div>`;
+                        list.innerHTML = `<div class="text-center py-10 text-gray-500 italic text-sm">{{ __('ui.no_reviews_yet') }}</div>`;
                         return;
                     }
                     list.innerHTML = data.reviews.map(review => `
@@ -391,8 +404,7 @@
                         <i class="fa-solid fa-film mr-2 text-red-600"></i> Cine<span class="text-white">Book</span>
                     </a>
                     <p class="text-sm text-gray-400 leading-relaxed mb-4">
-                        Hệ thống đặt vé xem phim trực tuyến hàng đầu, mang đến trải nghiệm tuyệt vời và tiện lợi nhất
-                        cho người dùng.
+                        {{ __('ui.footer_desc') }}
                     </p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-gray-400 hover:text-white transition-colors"><i
@@ -407,25 +419,25 @@
                 <div>
                     <h3 class="text-white font-semibold mb-4 uppercase text-sm tracking-wider">CineBook</h3>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Về chúng tôi</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Tin tức</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Tuyển dụng</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Liên hệ</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.about_us') }}</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.news') }}</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.recruitment') }}</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.contact') }}</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="text-white font-semibold mb-4 uppercase text-sm tracking-wider">Hỗ Trợ</h3>
+                    <h3 class="text-white font-semibold mb-4 uppercase text-sm tracking-wider">{{ __('ui.support') }}</h3>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Điều khoản sử dụng</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Chính sách bảo mật</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">Giải đáp câu hỏi (FAQs)</a></li>
-                        <li><a href="/feedback" class="hover:text-red-500 transition-colors">Góp ý</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.terms_of_use') }}</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.privacy_policy') }}</a></li>
+                        <li><a href="#" class="hover:text-red-500 transition-colors">{{ __('ui.faqs') }}</a></li>
+                        <li><a href="/feedback" class="hover:text-red-500 transition-colors">{{ __('ui.feedback') }}</a></li>
                     </ul>
                 </div>
 
                 <div>
-                    <h3 class="text-white font-semibold mb-4 uppercase text-sm tracking-wider">Tải Ứng Dụng</h3>
+                    <h3 class="text-white font-semibold mb-4 uppercase text-sm tracking-wider">{{ __('ui.download_app') }}</h3>
                     <div class="space-y-3">
                         <a href="#"
                             class="flex flex-col items-start bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg px-3 py-2 transition-colors">
@@ -476,7 +488,7 @@
                             `).join('');
                                     searchSuggestions.classList.remove('hidden');
                                 } else {
-                                    searchSuggestions.innerHTML = `<div class="px-4 py-3 text-sm text-gray-500 italic text-center">Không tìm thấy phim phù hợp</div>`;
+                                    searchSuggestions.innerHTML = `<div class="px-4 py-3 text-sm text-gray-500 italic text-center">{{ __('ui.no_movies_found') }}</div>`;
                                     searchSuggestions.classList.remove('hidden');
                                 }
                             })
@@ -679,13 +691,13 @@
                     </div>
 
                     <p class="text-[#10b981] text-xs font-bold tracking-[0.2em] uppercase mb-2">Payment Success</p>
-                    <h3 class="text-white text-2xl font-bold mb-3">Thanh toán thành công</h3>
+                    <h3 class="text-white text-2xl font-bold mb-3">{{ __('ui.payment_success') }}</h3>
                     <p class="text-gray-400 text-sm mb-8 leading-relaxed px-4">{!! session('payment_success') !!}</p>
 
                     <a href="{{ route('account.index', ['tab' => 'tickets']) }}"
                         onclick="document.getElementById('paymentPopup').remove()"
                         class="inline-block bg-[#10b981] hover:bg-[#059669] text-white font-medium px-8 py-2.5 rounded-full transition-colors shadow-[0_4px_14px_0_rgba(16,185,129,0.39)]">
-                        Xem vé của tôi
+                        {{ __('ui.view_my_tickets') }}
                     </a>
                 @else
                     <!-- Error Icon -->
@@ -695,12 +707,12 @@
                     </div>
 
                     <p class="text-red-500 text-xs font-bold tracking-[0.2em] uppercase mb-2">Payment Failed</p>
-                    <h3 class="text-white text-2xl font-bold mb-3">Thanh toán thất bại</h3>
+                    <h3 class="text-white text-2xl font-bold mb-3">{{ __('ui.payment_failed') }}</h3>
                     <p class="text-gray-400 text-sm mb-8 leading-relaxed px-4">{!! session('payment_error') !!}</p>
 
                     <button onclick="document.getElementById('paymentPopup').remove()"
                         class="bg-red-500 hover:bg-red-600 text-white font-medium px-8 py-2.5 rounded-full transition-colors shadow-[0_4px_14px_0_rgba(239,68,68,0.39)]">
-                        Thử lại
+                        {{ __('ui.try_again') }}
                     </button>
                 @endif
             </div>

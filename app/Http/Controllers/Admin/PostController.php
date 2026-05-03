@@ -61,7 +61,7 @@ class PostController extends Controller
 
             return response()->json([
                 'url' => $url,
-                'message' => 'Tải thumbnail lên Cloudinary thành công.',
+                'message' => 'Tải thumbnail thành công.',
             ]);
         } catch (\Throwable $exception) {
             Log::warning('Cloudinary thumbnail upload failed.', [

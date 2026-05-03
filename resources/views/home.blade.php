@@ -31,7 +31,7 @@
         <div class="w-full md:w-[80%] lg:w-[60%] xl:w-[50%] space-y-6 md:space-y-8 z-10">
             <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-red-600/20 border border-red-600/30 text-red-500 text-[11px] font-black uppercase tracking-[0.3em] backdrop-blur-md">
                 <span class="flex h-2.5 w-2.5 rounded-full bg-red-500 shadow-[0_0_15px_rgba(239,68,68,1)] animate-pulse"></span>
-                SIÊU PHẨM NỔI BẬT
+                {{ __('ui.featured') }}
             </div>
             
             <div class="space-y-6">
@@ -46,13 +46,13 @@
             <div class="flex flex-wrap gap-5 pt-4">
                 <a href="{{ $heroBookingUrl }}" class="group bg-red-600 hover:bg-red-500 text-white font-black py-4 px-10 md:px-12 rounded-[20px] transition-all active:scale-95 shadow-[0_25px_50px_-12px_rgba(225,29,72,0.5)] flex items-center gap-4">
                     <i class="fa-solid fa-ticket text-xl group-hover:rotate-12 transition-transform"></i>
-                    <span class="text-lg uppercase">ĐẶT VÉ NGAY</span>
+                    <span class="text-lg uppercase">{{ __('ui.book_now') }}</span>
                 </a>
                 <a href="{{ $heroMovie?->trailer_link ?? 'https://www.youtube.com/watch?v=kH1XlwHQv9o' }}" 
                    target="_blank" 
                    class="bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 text-white font-black py-4 px-10 md:px-12 rounded-[20px] transition-all active:scale-95 flex items-center gap-4 group">
                     <i class="fa-solid fa-circle-play text-xl group-hover:scale-110 transition-transform text-white/80"></i>
-                    <span class="text-lg uppercase">XEM TRAILER</span>
+                    <span class="text-lg uppercase">{{ __('ui.watch_trailer') }}</span>
                 </a>
             </div>
         </div>
@@ -71,10 +71,10 @@
 <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="flex justify-between items-end mb-10">
         <div>
-            <h2 class="text-3xl font-extrabold tracking-tight text-white mb-2 uppercase">Phim Đang Chiếu</h2>
+            <h2 class="text-3xl font-extrabold tracking-tight text-white mb-2 uppercase">{{ __('ui.now_showing') }}</h2>
         </div>
         <a href="/movies" class="text-red-500 hover:text-red-400 font-bold flex items-center gap-1 transition-colors group">
-            Xem tất cả 
+            {{ __('ui.view_all') }}
             <i class="fa-solid fa-chevron-right text-xs transform group-hover:translate-x-1 transition-transform"></i>
         </a>
     </div>
@@ -136,8 +136,8 @@
 <div class="bg-gray-900 py-16">
     <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-end mb-8">
-            <h2 class="text-3xl font-bold text-white border-l-4 border-yellow-500 pl-3">Phim Sắp Chiếu</h2>
-            <a href="/movies" class="text-yellow-500 hover:text-yellow-400 font-medium text-sm">Xem tất cả</a>
+            <h2 class="text-3xl font-bold text-white border-l-4 border-yellow-500 pl-3">{{ __('ui.coming_soon') }}</h2>
+            <a href="/movies" class="text-yellow-500 hover:text-yellow-400 font-medium text-sm">{{ __('ui.view_all') }}</a>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
            @forelse ($comingSoon as $movie)
@@ -180,9 +180,9 @@
 
 <!-- Tin Tức & Khuyến Mãi -->
 <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <h2 class="text-3xl font-bold text-white mb-8 border-l-4 border-blue-500 pl-3">Tin Tức & Khuyến Mãi</h2>
+    <h2 class="text-3xl font-bold text-white mb-8 border-l-4 border-blue-500 pl-3">{{ __('ui.news_promotions') }}</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        @forelse ($newsPosts as $post)
+        @foreach ($newsPosts as $post)
         <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-colors">
             <img src="{{ $post->thumbnail ?? 'https://via.placeholder.com/600x300?text=No+Image' }}"
      class="w-full h-48 object-cover"
@@ -204,23 +204,7 @@
                 </div>
             </div>
         </div>
-        @empty
-        @for ($i = 1; $i <= 3; $i++)
-        <div class="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 transition-colors">
-            <img src="https://images.unsplash.com/photo-1485001564903-56e6ca3736d8?q=80&w=600&h=300&auto=format&fit=crop" class="w-full h-48 object-cover" alt="News Image">
-            <div class="p-6">
-                <div class="text-blue-400 text-xs font-bold uppercase mb-2">Khuyến Mãi</div>
-                <h3 class="text-xl font-bold text-white mb-3 hover:text-blue-400 cursor-pointer">Combo Bắp Nước Ưu Đãi 50% Dành Cho Sinh Viên</h3>
-                <p class="text-gray-400 text-sm line-clamp-3">
-                    Bắt đầu từ tháng này, CineBook mang đến ưu đãi cực khủng cho các bạn sinh viên. Chỉ cần mang thẻ sinh viên là có thể trải nghiệm...
-                </p>
-                <div class="mt-4 text-gray-500 text-sm flex items-center">
-                    <i class="fa-regular fa-calendar mr-2"></i> {{ date('d/m/Y') }}
-                </div>
-            </div>
-        </div>
-        @endfor
-        @endforelse
+        @endforeach
     </div>
 </div>
 @endsection

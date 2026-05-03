@@ -67,6 +67,33 @@
     .flatpickr-calendar.hasTime .flatpickr-time {
         border-top: 1px solid #1e293b !important;
     }
+    .admin-back-link {
+        display: inline-flex;
+        height: 2.75rem;
+        width: 2.75rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.9rem;
+        border: 1px solid rgba(55, 65, 81, 0.9);
+        background: rgba(17, 24, 39, 0.78);
+        color: rgb(209, 213, 219);
+        transition: border-color .18s ease, background .18s ease, color .18s ease, transform .18s ease;
+    }
+    .admin-back-link:hover {
+        border-color: rgba(239, 68, 68, 0.65);
+        background: rgba(127, 29, 29, 0.28);
+        color: #fff;
+        transform: translateX(-2px);
+    }
+    .admin-back-link i {
+        font-size: 1rem !important;
+        line-height: 1;
+    }
+    .admin-page-title {
+        font-size: clamp(1.25rem, 4.2vw, 1.9rem);
+        line-height: 1.1;
+    }
     </style>
 </head>
 
@@ -79,7 +106,7 @@
                         <i class="fa-solid fa-film text-lg"></i>
                     </div>
                     <div>
-                        <div class="text-[11px] uppercase tracking-[0.28em] text-gray-500">Admin Panel</div>
+                        <div class="text-[11px] uppercase tracking-[0.28em] text-gray-500">{{ __('ui.admin_panel') }}</div>
                         <div class="text-2xl font-extrabold tracking-tight text-red-500">Cine<span class="text-white">Book</span></div>
                     </div>
                 </a>
@@ -87,15 +114,15 @@
 
             <div class="flex-1 px-5 py-6 flex flex-col justify-between">
                 <div>
-                    <div class="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-gray-500">Điều hướng</div>
+                    <div class="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-gray-500">{{ __('ui.navigation') }}</div>
                     <nav class="space-y-2">
                         @php
                             $adminNav = [
-                                'dashboard' => ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'icon' => 'fa-chart-line'],
-                                'management' => ['label' => 'Quản lý', 'route' => 'admin.management', 'icon' => 'fa-layer-group'],
-                                'posts' => ['label' => 'Bài viết', 'route' => 'admin.posts.create', 'icon' => 'fa-newspaper'],
-                                'actions' => ['label' => 'Action', 'route' => 'admin.actions', 'icon' => 'fa-bolt'],
-                                'feedback' => ['label' => 'Ý kiến phản hồi', 'route' => 'admin.feedback', 'icon' => 'fa-comments'],
+                                'dashboard' => ['label' => __('ui.dashboard'), 'route' => 'admin.dashboard', 'icon' => 'fa-chart-line'],
+                                'management' => ['label' => __('ui.management'), 'route' => 'admin.management', 'icon' => 'fa-layer-group'],
+                                'posts' => ['label' => __('ui.posts'), 'route' => 'admin.posts.create', 'icon' => 'fa-newspaper'],
+                                'actions' => ['label' => __('ui.actions'), 'route' => 'admin.actions', 'icon' => 'fa-bolt'],
+                                'feedback' => ['label' => __('ui.feedback'), 'route' => 'admin.feedback', 'icon' => 'fa-comments'],
                             ];
                         @endphp
 
@@ -112,7 +139,7 @@
 
                         @if(Auth::user()->isSystemOwner())
                             <div class="my-6 border-t border-gray-800 opacity-50"></div>
-                            <div class="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-red-500">Quyền chủ sở hữu</div>
+                            <div class="mb-3 px-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-red-500">{{ __('ui.owner_rights') }}</div>
                             <a
                                 href="{{ route('admin.system-owner.index') }}"
                                 class="{{ ($activeTab ?? '') === 'system_owner' ? 'bg-gradient-to-r from-red-600 to-red-800 text-white shadow-lg shadow-red-950/50' : 'text-red-400 hover:bg-red-500/10 hover:text-red-300' }} flex items-center gap-3 rounded-2xl border {{ ($activeTab ?? '') === 'system_owner' ? 'border-red-500/60' : 'border-red-500/10' }} px-4 py-3 text-sm font-black transition"
@@ -130,13 +157,13 @@
                         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-600 text-white shadow-lg shadow-red-900/40 mb-3">
                             <i class="fa-solid fa-user-shield text-base"></i>
                         </div>
-                        <h3 class="text-sm font-bold text-white mb-1">Đăng nhập tối cao</h3>
+                        <h3 class="text-sm font-bold text-white mb-1">{{ __('ui.supreme_login') }}</h3>
                         <p class="text-[11px] text-gray-500 leading-relaxed mb-4">
-                            Sếp cần xác thực để dùng tính năng cấp cao.
+                            {{ __('ui.supreme_login_desc') }}
                         </p>
                         <a href="{{ route('system-owner.portal') }}" class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-br from-red-600 to-red-800 px-3 py-2.5 text-[11px] font-black text-white transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-red-900/30">
                             <i class="fa-solid fa-crown text-amber-400 group-hover:rotate-12 transition-transform"></i>
-                            <span>XÁC THỰC NGAY</span>
+                            <span>{{ __('ui.verify_now') }}</span>
                         </a>
                     </div>
                     @else
@@ -172,25 +199,29 @@
             <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(220,38,38,0.18),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(239,68,68,0.12),transparent_30%)]"></div>
 
             <header class="sticky top-0 z-30 border-b border-gray-800 bg-gray-950/85 backdrop-blur-md">
-                <div class="flex h-[76px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center gap-3">
+                <div class="flex min-h-[68px] items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-6 lg:h-[76px] lg:px-8 lg:py-0">
+                    <div class="flex min-w-0 items-center gap-3">
                         <a href="{{ route('admin.dashboard') }}" class="flex h-11 w-11 items-center justify-center rounded-2xl bg-red-600 text-white shadow-lg shadow-red-900/30 lg:hidden">
                             <i class="fa-solid fa-film"></i>
                         </a>
-                        <div>
-                            <div class="text-xs font-semibold uppercase tracking-[0.24em] text-gray-500">CineBook Admin</div>
-                            <h1 class="text-xl font-extrabold tracking-tight text-white">@yield('page-title', 'Dashboard')</h1>
+                        <div class="min-w-0">
+                            <div class="hidden text-xs font-semibold uppercase tracking-[0.24em] text-gray-500 sm:block">CineBook Admin</div>
+                            <h1 class="truncate text-base font-extrabold tracking-tight text-white sm:text-xl">@yield('page-title', 'Dashboard')</h1>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <a href="{{ route('home') }}" class="hidden items-center gap-2 rounded-2xl border border-gray-800 bg-gray-900/80 px-4 py-3 text-sm font-semibold text-gray-300 transition hover:border-gray-700 hover:text-white md:inline-flex">
+                    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                        <a href="{{ route('home') }}" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/80 text-sm font-semibold text-gray-300 transition hover:border-gray-700 hover:text-white md:w-auto md:px-4">
                             <i class="fa-solid fa-house"></i>
-                            <span>Trang chủ</span>
+                            <span class="hidden md:inline">{{ __('ui.home') }}</span>
                         </a>
-                        <label class="hidden min-w-[260px] items-center gap-3 rounded-2xl border border-gray-800 bg-gray-900/80 px-4 py-3 md:flex">
+                        <div class="hidden sm:flex items-center rounded-full border border-gray-800 bg-gray-900/80 p-1 text-xs font-bold">
+                            <a href="{{ route('language.switch', 'vi') }}" class="rounded-full px-2.5 py-1 {{ app()->getLocale() === 'vi' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white' }}">VI</a>
+                            <a href="{{ route('language.switch', 'en') }}" class="rounded-full px-2.5 py-1 {{ app()->getLocale() === 'en' ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-white' }}">EN</a>
+                        </div>
+                        <label class="hidden min-w-[220px] items-center gap-3 rounded-2xl border border-gray-800 bg-gray-900/80 px-4 py-3 xl:flex">
                             <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
-                            <input type="text" placeholder="Tìm phim, rạp, bài viết..." class="w-full border-0 bg-transparent p-0 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-0">
+                            <input type="text" placeholder="{{ __('ui.search_placeholder') }}" class="w-full border-0 bg-transparent p-0 text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:ring-0">
                         </label>
                         <button class="flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/80 text-gray-400 transition hover:border-gray-700 hover:text-white">
                             <i class="fa-regular fa-bell"></i>
@@ -203,7 +234,7 @@
                         </a>
                         @endif
 
-                        <div class="flex items-center gap-3 rounded-2xl border border-gray-800 bg-gray-900/80 px-3 py-2 text-white">
+                        <div class="hidden items-center gap-3 rounded-2xl border border-gray-800 bg-gray-900/80 px-3 py-2 text-white sm:flex">
                             <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-600 font-bold text-white shadow-inner">
                                 {{ mb_strtoupper(mb_substr(Auth::user()->name ?? 'A', 0, 1, 'UTF-8'), 'UTF-8') }}
                             </div>
@@ -216,9 +247,9 @@
                         </div>
                         <form action="{{ route('logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="inline-flex items-center gap-2 rounded-2xl bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:bg-red-700">
+                            <button type="submit" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-red-600 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:bg-red-700 md:w-auto md:px-4">
                                 <i class="fa-solid fa-right-from-bracket"></i>
-                                <span>Đăng xuất</span>
+                                <span class="hidden md:inline">{{ __('ui.logout') }}</span>
                             </button>
                         </form>
                     </div>

@@ -20,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        app()->setLocale(session('locale', config('app.locale', 'vi')));
+
         // GRACE: Chien thuat "Stateless & SSL Bypass" - Giai quyet dut diem loi Login Google local
         if (config('app.env') === 'local') {
             Socialite::extend('google', function ($app) {

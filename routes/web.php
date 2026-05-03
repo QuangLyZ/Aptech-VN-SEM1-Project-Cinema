@@ -36,6 +36,12 @@ Route::get('/sendEmail', [SendEmailController::class, 'send'])->name('sendEmail'
 
 // Trang chủ
 Route::get('/', [MovieController::class, 'index'])->name('home');
+Route::get('/language/{locale}', function (string $locale) {
+    abort_unless(in_array($locale, ['vi', 'en'], true), 404);
+    session(['locale' => $locale]);
+
+    return back();
+})->name('language.switch');
 
 // Auth
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

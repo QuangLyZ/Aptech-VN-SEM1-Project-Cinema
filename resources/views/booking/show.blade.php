@@ -109,13 +109,18 @@
                             @auth
                                 Vé sẽ được lưu vào tài khoản của bạn ngay sau khi thanh toán.
                             @else
-                                Vui lòng <a href="{{ route('login') }}" class="font-bold underline">đăng nhập</a> để thanh toán, lưu lịch sử mua vé và dùng voucher.
+                                Bạn có thể thanh toán nhanh chỉ bằng số điện thoại. Nếu số này đã đăng ký tài khoản, giao dịch sẽ được ghi vào tài khoản đó.
                             @endauth
                         </p>
                         <div class="space-y-3">
-                            <input id="customerName" name="customerName" type="text" value="{{ old('customerName', $user?->fullname ?? '') }}" placeholder="Họ và tên" class="w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" required>
-                            <input id="customerEmail" name="customerEmail" type="email" value="{{ old('customerEmail', $user?->email ?? '') }}" placeholder="Email nhận vé" class="w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" required>
-                            <p class="text-xs text-gray-500">Vé điện tử sẽ được gửi đúng vào email bạn nhập ở ô này sau khi thanh toán thành công.</p>
+                            @auth
+                                <input id="customerName" name="customerName" type="text" value="{{ old('customerName', $user?->fullname ?? '') }}" placeholder="Họ và tên" class="w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" required>
+                                <input id="customerEmail" name="customerEmail" type="email" value="{{ old('customerEmail', $user?->email ?? '') }}" placeholder="Email nhận vé" class="w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" required>
+                                <p class="text-xs text-gray-500">Vé điện tử sẽ được gửi đúng vào email bạn nhập ở ô này sau khi thanh toán thành công.</p>
+                            @else
+                                <input id="customerName" name="customerName" type="hidden" value="">
+                                <input id="customerEmail" name="customerEmail" type="email" value="" class="hidden">
+                            @endauth
                             <input id="customerPhone" name="customerPhone" type="tel" value="{{ old('customerPhone', $user?->phone ?? '') }}" placeholder="Số điện thoại" class="w-full rounded border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" required>
                             <p id="formError" class="mt-1 hidden text-sm text-red-400"></p>
                         </div>
@@ -393,26 +398,21 @@
         }
 
         function validateBookingForm() {
-            if (!bookingConfig.isAuthenticated) {
-                showFormError('Bạn cần đăng nhập trước khi thanh toán để hệ thống lưu vé và lịch sử voucher.');
-                return false;
-            }
-
             const name = nameField.value.trim();
             const email = emailField.value.trim();
             const phone = phoneField.value.trim().replace(/\s+/g, '');
 
-            if (!name || !email || !phone) {
-                showFormError('Vui lòng điền đầy đủ họ tên, email và số điện thoại.');
+            if (!phone || (bookingConfig.isAuthenticated && (!name || !email))) {
+                showFormError(bookingConfig.isAuthenticated ? 'Vui lòng điền đầy đủ họ tên, email và số điện thoại.' : 'Vui lòng nhập số điện thoại để thanh toán.');
                 return false;
             }
 
-            if (name.length < 3) {
+            if (bookingConfig.isAuthenticated && name.length < 3) {
                 showFormError('Họ và tên phải có ít nhất 3 ký tự.');
                 return false;
             }
 
-            if (!emailField.checkValidity()) {
+            if (bookingConfig.isAuthenticated && !emailField.checkValidity()) {
                 showFormError('Email không hợp lệ.');
                 return false;
             }

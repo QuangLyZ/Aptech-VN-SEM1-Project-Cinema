@@ -16,10 +16,10 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
-    // Grace: Định nghĩa 3 tầng quyền lực Cyberpunk
-    const ROLE_CUSTOMER = 0;
-    const ROLE_MANAGER = 1;
-    const ROLE_ADMIN = 2;
+    public const ROLE_GUEST = 0;
+    public const ROLE_CLIENT = 1;
+    public const ROLE_ADMIN = 2;
+    public const ROLE_SUPERADMIN = 3;
 
     protected $fillable = [
         'fullname',
@@ -58,9 +58,11 @@ class User extends Authenticatable
     /**
      * Grace: Helper kiểm tra quyền hạn
      */
-    public function isCustomer(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_CUSTOMER; }
-    public function isManager(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_MANAGER; }
-    public function isAdmin(): bool { return (int)($this->admin_role ?? 0) === self::ROLE_ADMIN || $this->isSystemOwner(); }
+    public function isGuest(): bool { return (int)($this->admin_role ?? self::ROLE_GUEST) === self::ROLE_GUEST; }
+    public function isClient(): bool { return (int)($this->admin_role ?? self::ROLE_GUEST) === self::ROLE_CLIENT; }
+    public function isCustomer(): bool { return $this->isClient(); }
+    public function isManager(): bool { return false; }
+    public function isAdmin(): bool { return (int)($this->admin_role ?? self::ROLE_GUEST) === self::ROLE_ADMIN || $this->isSystemOwner(); }
 
     protected function name(): Attribute
     {
@@ -81,7 +83,9 @@ class User extends Authenticatable
      */
     public function isSystemOwner(): bool
     {
-        return $this->isRootOwner() || $this->isSubOwner();
+        return (int)($this->admin_role ?? self::ROLE_GUEST) === self::ROLE_SUPERADMIN
+            || $this->isRootOwner()
+            || $this->isSubOwner();
     }
 
     /**

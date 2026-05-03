@@ -64,16 +64,23 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
-        // Chỉ Quản trị viên cấp cao (System Owner) mới có quyền phân quyền
-        if (!auth()->user()->isSystemOwner()) {
-            return redirect()->route('admin.users.index')->with('error', 'Chỉ Quản trị viên cấp cao mới có quyền thực hiện hành động này!');
+        $actor = auth()->user();
+
+        if (! $actor?->isAdmin()) {
+            return redirect()->route('admin.users.index')->with('error', 'Bạn không có quyền thực hiện hành động này!');
         }
 
         $request->validate([
-            'admin_role' => 'required|integer|in:0,1,2',
+            'admin_role' => 'required|integer|in:0,1,2,3',
         ]);
 
-        $user->admin_role = $request->input('admin_role');
+        $newRole = (int) $request->input('admin_role');
+
+        if (! $actor->isSystemOwner() && $newRole > User::ROLE_CLIENT) {
+            return redirect()->route('admin.users.index')->with('error', 'Chỉ Super Admin mới được cấp quyền Admin hoặc Super Admin.');
+        }
+
+        $user->admin_role = $newRole;
         $user->save();
 
         return redirect()->route('admin.users.index')->with('success', 'Đã cập nhật quyền truy cập cho ' . ($user->name ?? $user->username ?? 'người dùng'));

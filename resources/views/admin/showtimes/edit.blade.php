@@ -9,11 +9,11 @@
     {{-- Header --}}
     <div class="flex items-center gap-4">
         <a href="{{ route('admin.showtimes.index') }}"
-           class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+           class="admin-back-link">
             <i class="fa-solid fa-chevron-left text-2xl"></i>
         </a>
         <div>
-            <h2 class="text-2xl font-extrabold tracking-tight text-white">Sửa Suất Chiếu</h2>
+            <h2 class="admin-page-title font-extrabold tracking-tight text-white">Sửa Suất Chiếu</h2>
             <p class="mt-1 text-sm text-gray-400">Cập nhật thông tin cho suất chiếu #{{ $showtime->id }}.</p>
         </div>
     </div>

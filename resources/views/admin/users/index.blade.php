@@ -7,11 +7,11 @@
 <div class="space-y-6 animate-[fadeIn_0.5s_ease-in-out]">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.management') }}" class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+            <a href="{{ route('admin.management') }}" class="admin-back-link">
                 <i class="fa-solid fa-chevron-left text-2xl"></i>
             </a>
             <div>
-                <h2 class="text-2xl font-extrabold tracking-tight text-white">Danh sách người dùng</h2>
+                <h2 class="admin-page-title font-extrabold tracking-tight text-white">Danh sách người dùng</h2>
                 <p class="mt-1 text-sm text-gray-400">Quản lý và phân tích hành vi của người dùng hệ thống.</p>
             </div>
         </div>
@@ -56,22 +56,39 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @php
+                                    $displayRole = (int) $user->admin_role;
                                     $isSystemOwner = $user->isSystemOwner();
-                                    $displayRole = $isSystemOwner ? 2 : $user->admin_role;
                                     
-                                    $roleClass = $displayRole == 2 ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 
-                                                ($displayRole == 1 ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 
+                                    $roleClass = $displayRole == 3 || $isSystemOwner ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                ($displayRole == 2 ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                ($displayRole == 1 ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                                                 'bg-gray-500/10 text-gray-400 border-gray-500/20');
-                                    $roleIcon = $displayRole == 2 ? 'fa-user-shield' : 
-                                               ($displayRole == 1 ? 'fa-user-tie' : 'fa-user');
-                                    $roleText = $isSystemOwner ? 'Quản trị viên tối cao' : 
-                                               ($displayRole == 2 ? 'Quản trị viên' : 
-                                               ($displayRole == 1 ? 'Quản lý' : 'Khách hàng'));
+                                    $roleIcon = $displayRole == 3 || $isSystemOwner ? 'fa-crown' :
+                                               ($displayRole == 2 ? 'fa-user-shield' :
+                                               ($displayRole == 1 ? 'fa-user' : 'fa-user-clock'));
+                                    $roleText = $displayRole == 3 || $isSystemOwner ? 'Super Admin' :
+                                               ($displayRole == 2 ? 'Admin' :
+                                               ($displayRole == 1 ? 'Client' : 'Guest'));
                                 @endphp
-                                <span class="inline-flex items-center gap-1.5 rounded-full {{ $roleClass }} px-3 py-1 text-xs font-semibold border">
-                                    <i class="fa-solid {{ $roleIcon }} text-[10px]"></i>
-                                    {{ $roleText }}
-                                </span>
+                                @if(auth()->user()->isAdmin() && (auth()->user()->isSystemOwner() || $displayRole <= 1))
+                                    <form action="{{ route('admin.users.update', $user) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="admin_role" onchange="this.form.submit()" class="rounded-full border {{ $roleClass }} bg-gray-950 px-3 py-1 text-xs font-semibold focus:outline-none">
+                                            <option value="0" {{ $displayRole === 0 ? 'selected' : '' }}>0 - Guest</option>
+                                            <option value="1" {{ $displayRole === 1 ? 'selected' : '' }}>1 - Client</option>
+                                            @if(auth()->user()->isSystemOwner())
+                                                <option value="2" {{ $displayRole === 2 ? 'selected' : '' }}>2 - Admin</option>
+                                                <option value="3" {{ $displayRole === 3 ? 'selected' : '' }}>3 - Super Admin</option>
+                                            @endif
+                                        </select>
+                                    </form>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 rounded-full {{ $roleClass }} px-3 py-1 text-xs font-semibold border">
+                                        <i class="fa-solid {{ $roleIcon }} text-[10px]"></i>
+                                        {{ $roleText }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @if($user->favorite_genre !== 'Chưa có dữ liệu')

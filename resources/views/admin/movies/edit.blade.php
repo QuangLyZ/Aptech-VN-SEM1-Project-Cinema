@@ -6,11 +6,11 @@
 @section('content')
 <div class="max-w-4xl animate-[fadeIn_0.5s_ease-in-out]">
     <div class="mb-6 flex items-center gap-4">
-        <a href="{{ route('admin.movies.index') }}" class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+        <a href="{{ route('admin.movies.index') }}" class="admin-back-link">
             <i class="fa-solid fa-chevron-left text-2xl"></i>
         </a>
         <div>
-            <h2 class="text-2xl font-extrabold tracking-tight text-white">{{ $pageTitle }}</h2>
+            <h2 class="admin-page-title font-extrabold tracking-tight text-white">{{ $pageTitle }}</h2>
         </div>
     </div>
 

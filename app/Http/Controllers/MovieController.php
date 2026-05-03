@@ -26,7 +26,7 @@ class MovieController extends Controller
 
         try {
             $now = Carbon::now('Asia/Ho_Chi_Minh');
-            $threeMonthsLater = $now->copy()->addMonths(3)->toDateString();
+            $today = $now->toDateString();
 
             // Tối ưu: Chỉ lấy những gì cần thiết và Eager Load Count/Sum thay vì cả Relation
             $baseQuery = Movie::query()
@@ -34,9 +34,9 @@ class MovieController extends Controller
                 ->withSum(['reviews' => fn($q) => $q->where('is_visible', true)], 'rating');
 
             $nowShowing = (clone $baseQuery)
-                ->where(function ($query) use ($threeMonthsLater) {
+                ->where(function ($query) use ($today) {
                     $query->whereNull('release_date')
-                          ->orWhereDate('release_date', '<=', $threeMonthsLater);
+                          ->orWhereDate('release_date', '<=', $today);
                 })
                 ->orderByDesc('release_date')
                 ->orderBy('name')
@@ -44,7 +44,7 @@ class MovieController extends Controller
                 ->get();
 
             $comingSoon = (clone $baseQuery)
-                ->whereDate('release_date', '>', $threeMonthsLater)
+                ->whereDate('release_date', '>', $today)
                 ->orderBy('release_date')
                 ->limit(8)
                 ->get();

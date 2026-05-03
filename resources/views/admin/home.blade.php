@@ -957,7 +957,7 @@
                         Trung Tâm Quản Lý
                     </div>
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('admin.dashboard') }}" class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+                        <a href="{{ route('admin.dashboard') }}" class="admin-back-link">
                             <i class="fa-solid fa-chevron-left text-3xl md:text-4xl"></i>
                         </a>
                         <h2 class="text-3xl font-extrabold tracking-tight text-white md:text-4xl">Tổng Quan Quản Lý</h2>

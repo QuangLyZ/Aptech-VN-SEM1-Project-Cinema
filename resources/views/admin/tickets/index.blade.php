@@ -10,11 +10,11 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-4">
             <a href="{{ route('admin.management') }}"
-               class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+               class="admin-back-link">
                 <i class="fa-solid fa-chevron-left text-2xl"></i>
             </a>
             <div>
-                <h2 class="text-2xl font-extrabold tracking-tight text-white">Quản lý Vé</h2>
+                <h2 class="admin-page-title font-extrabold tracking-tight text-white">Quản lý Vé</h2>
                 <p class="mt-1 text-sm text-gray-400">Theo dõi lịch sử đặt vé và chi tiết giao dịch của người dùng.</p>
             </div>
         </div>
@@ -81,12 +81,20 @@
                             <td class="px-6 py-4">
                                 <div class="font-bold text-white">
                                     {{ $ticket->fullname ?? ($ticket->user?->name ?? 'Guest') }}
+                                    @if(!$ticket->user_id)
+                                        <span class="ml-2 rounded-full border border-gray-600 bg-gray-800 px-2 py-0.5 text-[10px] font-semibold uppercase text-gray-300">Guest</span>
+                                    @endif
                                 </div>
                                 <div class="mt-0.5 text-xs text-gray-500">
-                                    {{ $ticket->email ?? $ticket->user?->email }}
+                                    {{ $ticket->email ?? $ticket->user?->email ?? 'Khách chưa có tài khoản' }}
                                 </div>
                                 @if($ticket->phone)
                                     <div class="mt-0.5 text-xs text-gray-500">{{ $ticket->phone }}</div>
+                                @endif
+                                @if(!$ticket->user_id && $ticket->status === 'paid')
+                                    <div class="mt-1 text-xs font-semibold text-emerald-400">
+                                        Giao dịch thành công từ khách SĐT {{ $ticket->phone ?? 'N/A' }}
+                                    </div>
                                 @endif
                             </td>
                             <td class="px-6 py-4">

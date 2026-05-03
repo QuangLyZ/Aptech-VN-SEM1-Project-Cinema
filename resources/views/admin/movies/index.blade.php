@@ -7,11 +7,11 @@
 <div class="space-y-6 animate-[fadeIn_0.5s_ease-in-out]">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('admin.management') }}" class="text-[rgb(255,255,255)] transition hover:text-gray-300">
+            <a href="{{ route('admin.management') }}" class="admin-back-link">
                 <i class="fa-solid fa-chevron-left text-2xl"></i>
             </a>
             <div>
-                <h2 class="text-2xl font-extrabold tracking-tight text-white">Danh sách Phim</h2>
+                <h2 class="admin-page-title font-extrabold tracking-tight text-white">Danh sách Phim</h2>
                 <p class="mt-1 text-sm text-gray-400">Quản lý toàn bộ thư viện phim chiếu rạp của hệ thống.</p>
             </div>
         </div>

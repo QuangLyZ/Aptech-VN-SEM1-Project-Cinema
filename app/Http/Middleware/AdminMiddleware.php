@@ -17,7 +17,7 @@ class AdminMiddleware
             return $next($request);
         }
 
-        if (! $user || (! $user->isAdmin() && ! $user->isManager())) {
+        if (! $user || ! $user->isAdmin()) {
             abort(403, 'Khu vực này chỉ dành cho nhân sự được cấp quyền.');
         }
 

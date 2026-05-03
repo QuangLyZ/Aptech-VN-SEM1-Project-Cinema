@@ -406,13 +406,10 @@
                     <p class="text-sm text-gray-400 leading-relaxed mb-4">
                         {{ __('ui.footer_desc') }}
                     </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors"><i
-                                class="fa-brands fa-facebook"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors"><i
-                                class="fa-brands fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white transition-colors"><i
-                                class="fa-brands fa-instagram"></i></a>
+                    <div class="flex items-center gap-4">
+                        <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 text-gray-400 hover:bg-red-600 hover:text-white transition-all"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 text-gray-400 hover:bg-red-600 hover:text-white transition-all"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 text-gray-400 hover:bg-red-600 hover:text-white transition-all"><i class="fa-brands fa-instagram"></i></a>
                     </div>
                 </div>
 

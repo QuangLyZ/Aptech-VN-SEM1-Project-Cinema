@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use App\Http\Controllers\SendEmailController;
 use App\Http\Controllers\Admin\VoucherController;
@@ -181,11 +181,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('showtimes', App\Http\Controllers\Admin\ShowtimeController::class);
     Route::resource('tickets', App\Http\Controllers\Admin\TicketController::class);
     Route::get('/tickets-export', [App\Http\Controllers\Admin\TicketController::class, 'exportCsv'])->name('tickets.export');
-    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+
     Route::resource('posts', App\Http\Controllers\Admin\PostController::class);
 
     // Dành riêng cho Quản trị viên cấp cao (System Owner)
     Route::middleware(['system_owner'])->group(function () {
+        Route::resource('users', App\Http\Controllers\Admin\UserController::class);
         Route::get('/system-owner', [App\Http\Controllers\Admin\SystemOwnerController::class, 'index'])->name('system-owner.index');
         Route::put('/system-owner/users/{user}/role', [App\Http\Controllers\Admin\SystemOwnerController::class, 'updateRole'])->name('system-owner.update-role');
         

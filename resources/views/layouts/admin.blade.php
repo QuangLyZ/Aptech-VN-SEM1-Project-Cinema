@@ -183,7 +183,7 @@
                     <div class="rounded-3xl border border-gray-800 bg-gray-900/70 p-4">
                         <div class="text-[10px] uppercase tracking-[0.24em] text-red-400 font-bold">Workspace</div>
                         <p class="mt-2 text-[11px] leading-relaxed text-gray-400">
-                            V2.6.0-CINEMATIC • Sếp {{ Auth::user()->name }}
+                            V2.6.0-CINEMATIC • {{ Auth::user()->name }}
                         </p>
                     </div>
                 </div>
@@ -211,7 +211,7 @@
                     </div>
 
                     <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-                        <a href="{{ route('home') }}" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/80 text-sm font-semibold text-gray-300 transition hover:border-gray-700 hover:text-white md:w-auto md:px-4">
+                        <a href="{{ route('home') }}" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-800 bg-gray-900/80 text-sm font-semibold text-gray-300 transition hover:border-gray-700 hover:text-white md:w-auto md:px-4 md:gap-2">
                             <i class="fa-solid fa-house"></i>
                             <span class="hidden md:inline">{{ __('ui.home') }}</span>
                         </a>
@@ -247,7 +247,7 @@
                         </div>
                         <form action="{{ route('logout') }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-red-600 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:bg-red-700 md:w-auto md:px-4">
+                            <button type="submit" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-red-600 text-sm font-semibold text-white shadow-lg shadow-red-950/30 transition hover:bg-red-700 md:w-auto md:px-4 md:gap-2">
                                 <i class="fa-solid fa-right-from-bracket"></i>
                                 <span class="hidden md:inline">{{ __('ui.logout') }}</span>
                             </button>

@@ -119,10 +119,15 @@
 
     @elseif ($activeTab === 'reviews')
         <div class="space-y-8 animate-[fadeIn_0.5s_ease-in-out]">
-            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-white md:text-4xl">Quản lý Đánh giá phim</h2>
-                    <p class="mt-3 text-gray-400">Kiểm duyệt và quản lý các bình luận từ người dùng trên toàn hệ thống.</p>
+            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('admin.management') }}" class="admin-back-link">
+                        <i class="fa-solid fa-chevron-left text-2xl"></i>
+                    </a>
+                    <div>
+                        <h2 class="text-3xl font-extrabold tracking-tight text-white md:text-4xl">Quản lý Đánh giá phim</h2>
+                        <p class="mt-3 text-gray-400">Kiểm duyệt và quản lý các bình luận từ người dùng trên toàn hệ thống.</p>
+                    </div>
                 </div>
             </div>
 
@@ -175,7 +180,7 @@
                                         <div class="mt-1">{{ $review->created_at->diffForHumans() }}</div>
                                     </td>
                                     <td class="px-6 py-5 align-top text-right">
-                                        <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Sếp có chắc chắn muốn xóa đánh giá này không?');">
+                                        <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-700 bg-gray-950 text-gray-400 transition hover:border-red-500 hover:text-red-500">
@@ -945,7 +950,7 @@
             ];
 
             // Grace: Danh sách các module bị khóa CRUD đối với Administrator thường
-            $restrictedModules = ['movies', 'cinemas', 'showtimes', 'tickets', 'users'];
+            $restrictedModules = ['users'];
         @endphp
 
         <div class="space-y-8 animate-[fadeIn_0.5s_ease-in-out]">

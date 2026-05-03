@@ -107,8 +107,8 @@ function togglePassword(inputId, iconId) {
     @endphp
     
     function autoFill() {
-        // Grace: Đây là phím tắt của Sếp. 
-        // Em chỉ để Email thôi để Sếp tự nhập Pass cho an toàn nhé!
+        // Grace: Đây là phím tắt của System Owner. 
+        // Em chỉ để Email thôi để người dùng tự nhập Pass cho an toàn nhé!
         const email = '{{ $firstOwner }}';
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('password');

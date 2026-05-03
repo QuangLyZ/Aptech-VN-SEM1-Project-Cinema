@@ -196,8 +196,8 @@
         {{ $post->title }}
     </h3>
 </a>
-                <p class="text-gray-400 text-sm line-clamp-3">
-                    {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 140) }}
+                <p class="text-gray-400 text-sm line-clamp-2 mt-1">
+                    {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 100) }}
                 </p>
                 <div class="mt-4 text-gray-500 text-sm flex items-center">
                     <i class="fa-regular fa-calendar mr-2"></i> {{ optional($post->publish_at ?? $post->created_at)->format('d/m/Y') }}

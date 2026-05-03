@@ -95,7 +95,7 @@
                                                 <a href="{{ route('admin.movies.edit', $movie) }}" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-700 bg-gray-950 text-gray-400 transition hover:border-blue-500 hover:text-blue-500">
                                                     <i class="fa-solid fa-pen"></i>
                                                 </a>
-                                                <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" onsubmit="return confirm('Sếp có chắc chắn muốn xóa phim này không?');">
+                                                <form action="{{ route('admin.movies.destroy', $movie) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phim này không?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-700 bg-gray-950 text-gray-400 transition hover:border-red-500 hover:text-red-500">

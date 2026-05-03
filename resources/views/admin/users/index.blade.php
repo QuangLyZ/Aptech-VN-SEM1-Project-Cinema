@@ -62,7 +62,7 @@
                                     $roleClass = $displayRole == 3 || $isSystemOwner ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                 ($displayRole == 2 ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
                                                 ($displayRole == 1 ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                'bg-gray-500/10 text-gray-400 border-gray-500/20');
+                                                'bg-gray-500/10 text-gray-400 border-gray-500/20'));
                                     $roleIcon = $displayRole == 3 || $isSystemOwner ? 'fa-crown' :
                                                ($displayRole == 2 ? 'fa-user-shield' :
                                                ($displayRole == 1 ? 'fa-user' : 'fa-user-clock'));

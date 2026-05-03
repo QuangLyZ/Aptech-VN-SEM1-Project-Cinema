@@ -8,8 +8,8 @@
     <!-- Welcome Header -->
     <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-red-600/20 via-slate-900 to-slate-950 p-8 border border-red-500/20 shadow-2xl">
         <div class="relative z-10">
-            <h2 class="text-3xl font-black text-white tracking-tighter">Chào mừng Sếp quay trở lại!</h2>
-            <p class="text-gray-400 mt-2 max-w-2xl">Đây là không gian dành riêng cho Quản trị viên cấp cao. Sếp có toàn quyền kiểm soát hệ thống, phân quyền nhân sự và theo dõi các chỉ số quan trọng nhất của CineBook.</p>
+            <h2 class="text-3xl font-black text-white tracking-tighter">Chào mừng bạn quay trở lại!</h2>
+            <p class="text-gray-400 mt-2 max-w-2xl">Đây là không gian dành riêng cho Quản trị viên cấp cao. Bạn có toàn quyền kiểm soát hệ thống, phân quyền nhân sự và theo dõi các chỉ số quan trọng nhất của CineBook.</p>
         </div>
         <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-red-600/10 blur-[100px]"></div>
     </div>
@@ -60,7 +60,7 @@
                     </div>
                     <div>
                         <h3 class="text-2xl font-black text-white">Hội Đồng Cố Vấn Tối Cao</h3>
-                        <p class="text-sm text-amber-500/60 font-bold uppercase tracking-widest">Đặc quyền Sếp Gốc (Root Owner)</p>
+                        <p class="text-sm text-amber-500/60 font-bold uppercase tracking-widest">Đặc quyền Root Owner</p>
                     </div>
                 </div>
 
@@ -119,7 +119,7 @@
         <div class="px-8 py-6 border-b border-gray-800 flex items-center justify-between bg-gray-900/30">
             <div>
                 <h3 class="text-xl font-black text-white">Quản lý Phân Quyền Nhân Sự</h3>
-                <p class="text-sm text-gray-500">Chỉ sếp mới có quyền thay đổi vai trò của nhân viên tại đây.</p>
+                <p class="text-sm text-gray-500">Chỉ System Owner mới có quyền thay đổi vai trò của nhân viên tại đây.</p>
             </div>
             <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-white shadow-lg shadow-red-900/20">
                 <i class="fa-solid fa-key"></i>
@@ -157,7 +157,7 @@
                                 @if($user->isSystemOwner())
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-red-600/10 px-4 py-1.5 text-xs font-black text-red-500 border border-red-500/20 shadow-[0_0_15px_rgba(220,38,38,0.1)] uppercase">
                                         <i class="fa-solid fa-crown text-[10px]"></i>
-                                        Sếp (Owner)
+                                        System Owner
                                     </span>
                                 @elseif($user->admin_role)
                                     <span class="inline-flex items-center gap-1.5 rounded-full bg-purple-600/10 px-4 py-1.5 text-xs font-black text-purple-500 border border-purple-500/20 uppercase">

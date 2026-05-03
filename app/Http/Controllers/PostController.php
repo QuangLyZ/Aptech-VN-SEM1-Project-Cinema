@@ -140,7 +140,8 @@ public function destroy($id)
 public function show($id)
 {
     $post = \App\Models\Post::findOrFail($id);
-    return view('admin.posts.show', compact('post'));
+    // Return the public post detail view
+    return view('post.detail', compact('post'));
 }
 public function toggle($id)
 {

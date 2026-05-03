@@ -11,8 +11,8 @@
                 <i class="fa-solid fa-chevron-left text-2xl"></i>
             </a>
             <div>
-                <h2 class="admin-page-title font-extrabold tracking-tight text-white">Danh sách Phim</h2>
-                <p class="mt-1 text-sm text-gray-400">Quản lý toàn bộ thư viện phim chiếu rạp của hệ thống.</p>
+                <h2 class="admin-page-title font-extrabold tracking-tight text-white">{{ __('ui.manage_movies') }}</h2>
+                <p class="mt-1 text-sm text-gray-400">{{ __('ui.manage_movies') }} - {{ __('ui.management') }}</p>
             </div>
         </div>
         @if(auth()->user()->isSystemOwner())
@@ -51,11 +51,11 @@
             <table class="w-full text-left text-sm whitespace-nowrap">
                 <thead class="border-b border-gray-800 bg-gray-950/50 uppercase text-gray-400">
                     <tr>
-                        <th class="px-6 py-4 font-semibold tracking-wider">Phim</th>
-                        <th class="px-6 py-4 font-semibold tracking-wider text-center">Thể loại</th>
-                        <th class="px-6 py-4 font-semibold tracking-wider text-center">Thời lượng</th>
-                        <th class="px-6 py-4 font-semibold tracking-wider text-center">Ngày Chiếu</th>
-                        <th class="px-6 py-4 font-semibold tracking-wider text-right">Thao tác</th>
+                    <th class="px-6 py-4 font-semibold tracking-wider">{{ __('ui.movies_schedule') }}</th>
+                    <th class="px-6 py-4 font-semibold tracking-wider text-center">{{ __('ui.genre') ?? 'Thể loại' }}</th>
+                    <th class="px-6 py-4 font-semibold tracking-wider text-center">{{ __('ui.duration') ?? 'Thời lượng' }}</th>
+                    <th class="px-6 py-4 font-semibold tracking-wider text-center">{{ __('ui.release_date') ?? 'Ngày Chiếu' }}</th>
+                    <th class="px-6 py-4 font-semibold tracking-wider text-right">{{ __('ui.actions') ?? 'Thao tác' }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-800">

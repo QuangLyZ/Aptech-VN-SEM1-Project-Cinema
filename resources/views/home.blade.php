@@ -141,38 +141,50 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
            @forelse ($comingSoon as $movie)
-            <div class="group relative rounded-xl overflow-hidden bg-gray-800 transition-transform duration-300 hover:-translate-y-2">
-               <img alt="{{ $movie->name }}" class="w-full h-96 object-cover opacity-80 group-hover:opacity-100 transition-opacity" src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop' }}">
-                
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                
-                <div class="absolute bottom-0 w-full p-6">
-                    <a href="{{ route('movies.show', $movie->id) }}">    
-                        <h3 class="text-xl font-bold text-white mb-1 group-hover:text-yellow-500 transition-colors">{{ $movie->name }}</h3>
-                    </a>
-                    <p class="text-gray-400 text-sm flex items-center">
-                        <i class="fa-regular fa-calendar-days mr-2 text-yellow-500"></i>
-                        Khởi chiếu: {{ $movie->release_date ? \Carbon\Carbon::parse($movie->release_date)->format('d/m/Y') : 'Đang cập nhật' }}
-                    </p>
+                <div class="group relative bg-slate-900 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-red-500/10 border border-white/5">
+                    <div class="relative aspect-[2/3] overflow-hidden">
+                        <img src="{{ $movie->poster ?? 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=400&h=600&auto=format&fit=crop' }}" 
+                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                             alt="{{ $movie->name }}">
+                    
+                        <!-- Gradient Overlay for Contrast -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/20 to-transparent opacity-90"></div>
+                    
+                        <!-- Top Badges -->
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            <span class="bg-red-600 text-white text-xs sm:text-sm font-black px-3 py-1.5 rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.5)] border border-red-500/50">
+                                {{ $movie->age_limit ? 'T' . $movie->age_limit : 'P' }}
+                            </span>
+                            <div class="bg-black/60 backdrop-blur-xl border border-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-2xl">
+                                <i class="fa-solid fa-star text-yellow-400 text-xs sm:text-sm"></i>
+                                <span class="text-white text-xs sm:text-sm font-black">{{ number_format($movie->average_rating, 1) }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Info Section (Mica/Glassmorphism Box) -->
+                    <div class="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4 p-4 sm:p-5 rounded-[1.5rem] bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl space-y-3 sm:space-y-4 transform transition-transform duration-500 group-hover:-translate-y-1">
+                        <div>
+                            <h3 class="text-base sm:text-lg font-extrabold text-white leading-tight group-hover:text-red-500 transition-colors line-clamp-1">{{ $movie->name }}</h3>
+                            <p class="text-slate-300/80 text-[9px] sm:text-[10px] mt-1 font-bold uppercase tracking-widest">{{ $movie->genre }}</p>
+                        </div>
+                    
+                        <div class="pt-0.5">
+                            <a href="{{ route('movies.show', $movie->id) }}" 
+                               class="w-full block bg-red-600 hover:bg-red-700 text-white text-[10px] sm:text-[11px] font-black py-3 rounded-xl transition-all active:scale-95 text-center">
+                                CHI TIẾT
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                
-                <!-- Age Label -->
-                <div class="absolute top-4 left-4">
-                    <span class="bg-yellow-500 text-black text-xs font-black px-2 py-1 rounded shadow-lg">
-                        {{ $movie->age_limit ? 'T' . $movie->age_limit : 'P' }}
-                    </span>
-                </div>
-            </div>
             @empty
-            @for ($i = 1; $i <= 4; $i++)
-            <div class="group relative rounded-xl overflow-hidden bg-gray-800">
-               <img alt="Coming soon" class="w-full h-96 object-cover opacity-50" src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&h=600&auto=format&fit=crop">
-                <div class="absolute bottom-0 w-full p-6 bg-gradient-to-t from-gray-900 to-transparent">
-                    <h3 class="text-xl font-bold text-white mb-1">Phim Sắp Ra Mắt</h3>
-                    <p class="text-gray-400 text-sm">Đang cập nhật lịch chiếu</p>
+            <div class="col-span-2 md:col-span-4">
+                <div class="rounded-xl border border-dashed border-gray-700 bg-gray-800 p-8 text-center">
+                    <h3 class="text-xl font-bold text-white mb-2">{{ __('ui.coming_soon') }}</h3>
+                    <p class="text-gray-400">{{ __('ui.coming_soon_empty') }}</p>
                 </div>
             </div>
-            @endfor
             @endforelse
         </div>
     </div>
@@ -197,7 +209,12 @@
     </h3>
 </a>
                 <p class="text-gray-400 text-sm line-clamp-2 mt-1">
-                    {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 100) }}
+                    {{-- Show first 10 words as requested --}}
+                    @php
+                        $words = preg_split('/\s+/', strip_tags($post->content));
+                        $teaser = count($words) > 10 ? implode(' ', array_slice($words, 0, 10)) . '...' : implode(' ', $words);
+                    @endphp
+                    {{ $teaser }}
                 </p>
                 <div class="mt-4 text-gray-500 text-sm flex items-center">
                     <i class="fa-regular fa-calendar mr-2"></i> {{ optional($post->publish_at ?? $post->created_at)->format('d/m/Y') }}
